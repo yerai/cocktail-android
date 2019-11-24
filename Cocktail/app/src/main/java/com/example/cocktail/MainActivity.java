@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Country
         /* CardView */
-        CardView cv4 = new CardView(this);
+        final CardView cv4 = new CardView(this);
         cv4.setCardElevation(DPS(0));
         cv4.setRadius(DPS(5));
         cv4.setLayoutParams(params3);
@@ -354,6 +354,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(cv3.getContext(), Favorites.class);
                 cv3.getContext().startActivity(intent);
+            }
+        });
+
+        cv4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(cv4.getContext(), DetailsView.class);
+                cv4.getContext().startActivity(intent);
             }
         });
 
