@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
                     params1.setMargins(DPS(5),DPS(0),DPS(10),DPS(0));
                 }
                 cv.setLayoutParams(params1);
-                Log.d("Debug", "1");
 
                 /* ImageView */
                 ImageView iv = new ImageView(this);
@@ -219,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Mood
         /* CardView */
-        CardView cv = new CardView(this);
+        final CardView cv = new CardView(this);
         cv.setCardElevation(DPS(0));
         cv.setRadius(DPS(5));
         CardView.LayoutParams params1 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(176),DPS(84)));
@@ -287,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Ingredients
         /* CardView */
-        CardView cv3 = new CardView(this);
+        final CardView cv3 = new CardView(this);
         cv3.setCardElevation(DPS(0));
         cv3.setRadius(DPS(5));
         cv3.setLayoutParams(params1);
@@ -344,6 +343,19 @@ public class MainActivity extends AppCompatActivity {
         cv4.addView(tv8);
         cv4.addView(tv7);
         ((LinearLayout)findViewById(R.id.Categories2)).addView(cv4);
+
+
+        /* Go to Favorites */
+        /* On click*/
+
+
+        cv3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(cv3.getContext(), Favorites.class);
+                cv3.getContext().startActivity(intent);
+            }
+        });
 
     }
 
