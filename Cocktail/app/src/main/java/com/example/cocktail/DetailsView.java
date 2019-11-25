@@ -36,6 +36,15 @@ public class DetailsView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Hide Top Bar
+        try
+        {
+            this.getSupportActionBar().hide();
+        }
+        catch (NullPointerException e){}
+
+        
         setContentView(R.layout.activity_details_view);
 
         textView = findViewById(R.id.txt_header);
