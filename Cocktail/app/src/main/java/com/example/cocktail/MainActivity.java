@@ -1,26 +1,23 @@
 package com.example.cocktail;
 
 import android.annotation.TargetApi;
-import android.app.DownloadManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -30,9 +27,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -48,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<cocktail> RecentCocktailArrayList = new ArrayList<cocktail>();
     private ArrayList<featured> FeaturedArrayList = new ArrayList<featured>();
+
+    final MainActivity context = this;
 
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -74,12 +71,6 @@ public class MainActivity extends AppCompatActivity {
         FeaturedArrayList.add(new featured("Top 15", "https://github.com/yerai/cocktail/blob/master/img/featured-1.jpg?raw=true", "Our top selection of Cocktails!"));
         FeaturedArrayList.add(new featured("Christmas Collection", "https://github.com/yerai/cocktail/blob/master/img/featured-2.jpg?raw=true", "Best selection to greet Santa."));
 
-        // Add Recent Cocktails
-        RecentCocktailArrayList.add(new cocktail("Bloody Mary", "https://www.thecocktaildb.com/images/media/drink/uyquuu1439906954.jpg"));
-        RecentCocktailArrayList.add(new cocktail("Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
-        RecentCocktailArrayList.add(new cocktail("Daiquiri", "https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
-        RecentCocktailArrayList.add(new cocktail("Whiskey Sour", "https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
-
         // Set titles
         ((TextView)findViewById(R.id.Title)).setTypeface(title);
         ((TextView)findViewById(R.id.Title)).setTextColor(Color.parseColor("#343035"));
@@ -90,58 +81,34 @@ public class MainActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.Categories)).setTypeface(title);
         ((TextView)findViewById(R.id.Categories)).setTextColor(Color.parseColor("#343035"));
 
+        // Navigation bar
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_home:
+                        Intent a = new Intent(MainActivity.this,MainActivity.class);
+                        startActivity(a);
+                        break;
+                    case R.id.navigation_favorites:
+                        Intent b = new Intent(MainActivity.this,Favorites.class);
+                        startActivity(b);
+
+                        break;
+                }
+                return false;
+            }
+        });
+
         // Set Searchbar
         final SearchView sv = findViewById(R.id.searchBar);
         sv.setBackgroundResource(R.drawable.searchview_rounded);
 
-        /*LinearLayout.LayoutParams params8 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        params8.setMargins(DPS(20),DPS(10),DPS(20),DPS(10));
-        params8.weight= (float) 0.5;
-        sv.setLayoutParams(params8);
-
-        TextView cs = findViewById(R.id.closeSearch);
-        cs.setVisibility(View.GONE);
-
-        cs.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.Recent).setVisibility(View.VISIBLE);
-                findViewById(R.id.Recent_List).setVisibility(View.VISIBLE);
-                findViewById(R.id.Featured).setVisibility(View.VISIBLE);
-                findViewById(R.id.Featured_List).setVisibility(View.VISIBLE);
-                findViewById(R.id.Categories).setVisibility(View.VISIBLE);
-                findViewById(R.id.Categories1).setVisibility(View.VISIBLE);
-                findViewById(R.id.Categories2).setVisibility(View.VISIBLE);
-                findViewById(R.id.Categories3).setVisibility(View.VISIBLE);
-                findViewById(R.id.closeSearch).setVisibility(View.GONE);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                params.setMargins(DPS(20),DPS(10),DPS(20),DPS(10));
-                params.weight= (float) 0.5;
-                sv.setLayoutParams(params);
-                sv.clearFocus();
-
-            }
-        });
-
-        */
         sv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sv.onActionViewExpanded();
-                /*findViewById(R.id.Recent).setVisibility(View.GONE);
-                findViewById(R.id.Recent_List).setVisibility(View.GONE);
-                findViewById(R.id.Featured).setVisibility(View.GONE);
-                findViewById(R.id.Featured_List).setVisibility(View.GONE);
-                findViewById(R.id.Categories).setVisibility(View.GONE);
-                findViewById(R.id.Categories1).setVisibility(View.GONE);
-                findViewById(R.id.Categories2).setVisibility(View.GONE);
-                findViewById(R.id.Categories3).setVisibility(View.GONE);
-                findViewById(R.id.closeSearch).setVisibility(View.VISIBLE);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                params.setMargins(DPS(20),DPS(10),DPS(0),DPS(10));
-                params.weight= (float) 0.5;
-                sv.setLayoutParams(params);*/
 
             }
         });
@@ -228,7 +195,11 @@ public class MainActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onClick(View view) {
 
-                                                    RecentCocktailArrayList.add(new cocktail("hol", "https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
+                                                    try {
+                                                        RecentCocktailArrayList.add(0,new cocktail( drink.getString("idDrink"),drink.getString("strDrink"), drink.getString("strDrinkThumb")));
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
                                                     Intent intent = new Intent(ll.getContext(), DetailsView.class);
                                                     try {
                                                         intent.putExtra("id", drink.getString("idDrink"));
@@ -267,10 +238,13 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.Recent_List).setVisibility(View.GONE);
         }else{
 
+            findViewById(R.id.Recent).setVisibility(View.VISIBLE);
+            findViewById(R.id.Recent_List).setVisibility(View.VISIBLE);
+
             for (int i=0; i<RecentCocktailArrayList.size(); i++){
 
                 /* Linear Layout */
-                LinearLayout ll = new LinearLayout(this);
+                final LinearLayout ll = new LinearLayout(this);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 ll.setLayoutParams(params);
                 ll.setOrientation(LinearLayout.VERTICAL);
@@ -317,6 +291,16 @@ public class MainActivity extends AppCompatActivity {
                 ll.addView(cv);
                 ll.addView(tv);
                 ((LinearLayout)findViewById(R.id.Recent_List_Container)).addView(ll);
+
+                final int finalI = i;
+                ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(ll.getContext(), DetailsView.class);
+                        intent.putExtra("id", RecentCocktailArrayList.get(finalI).id);
+                        ll.getContext().startActivity(intent);
+                    }
+                });
             }
 
 
@@ -551,6 +535,89 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        // Set Recent Cocktails
+        if(RecentCocktailArrayList == null || RecentCocktailArrayList.size()<1){
+            findViewById(R.id.Recent).setVisibility(View.GONE);
+            findViewById(R.id.Recent_List).setVisibility(View.GONE);
+        }else{
+
+            findViewById(R.id.Recent).setVisibility(View.VISIBLE);
+            findViewById(R.id.Recent_List).setVisibility(View.VISIBLE);
+
+            for (int i=0; i<RecentCocktailArrayList.size(); i++){
+
+                /* Linear Layout */
+                final LinearLayout ll = new LinearLayout(this);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                ll.setLayoutParams(params);
+                ll.setOrientation(LinearLayout.VERTICAL);
+
+                /* CardView */
+                CardView cv = new CardView(this);
+                cv.setCardElevation(DPS(0));
+                cv.setRadius(DPS(5));
+                CardView.LayoutParams params1 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(130),DPS(130)));
+                if(i==0){
+                    params1.setMargins(DPS(20),DPS(0),DPS(10),DPS(0));
+                }else if(i== RecentCocktailArrayList.size()-1){
+                    params1.setMargins(DPS(5),DPS(0),DPS(20),DPS(0));
+                }else{
+                    params1.setMargins(DPS(5),DPS(0),DPS(10),DPS(0));
+                }
+                cv.setLayoutParams(params1);
+
+                /* ImageView */
+                ImageView iv = new ImageView(this);
+                iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                params2.weight=1;
+                iv.setLayoutParams(params2);
+                new DownloadImageTask(iv).execute(RecentCocktailArrayList.get(i).image);
+
+                /* TextView */
+                TextView tv = new TextView(this);
+                tv.setText(RecentCocktailArrayList.get(i).name);
+                LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                params3.weight=1;
+                if(i==0){
+                    params3.setMargins(DPS(20), 0, 0, 0);
+                }else {
+                    params3.setMargins(DPS(5), 0, 0, 0);
+                }
+                tv.setLayoutParams(params3);
+                tv.setTextSize(DPS(5));
+                Typeface title2 = getResources().getFont(R.font.latobold);
+                tv.setTypeface(title2);
+                tv.setTextColor(Color.parseColor("#323031"));
+
+                /* Add Components */
+                cv.addView(iv);
+                ll.addView(cv);
+                ll.addView(tv);
+                ((LinearLayout)findViewById(R.id.Recent_List_Container)).addView(ll);
+
+                final int finalI = i;
+                ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(ll.getContext(), DetailsView.class);
+                        intent.putExtra("id", RecentCocktailArrayList.get(finalI).id);
+                        ll.getContext().startActivity(intent);
+                    }
+                });
+            }
+
+        }
+    }
+
+
+    public ArrayList<cocktail> getRecent() {
+        return RecentCocktailArrayList;
+    }
 
     // DPS to Pixels Function
     private int DPS(int dps){

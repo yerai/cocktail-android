@@ -1,6 +1,7 @@
 package com.example.cocktail;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -9,9 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -48,7 +52,7 @@ public class collection extends AppCompatActivity {
 
         if(collectionName.equals("Top 15")){
             FeaturedCocktailArrayList.add(new cocktail("Bloody Mary", "https://www.thecocktaildb.com/images/media/drink/uyquuu1439906954.jpg"));
-            FeaturedCocktailArrayList.add(new cocktail("Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11000","Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("Daiquiri", "https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("Whiskey Sour", "https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
         }else if(collectionName.equals("Christmas Collection")){
@@ -122,7 +126,7 @@ public class collection extends AppCompatActivity {
             params5.weight=1;
             params5.setMargins(DPS(20), 0, 0, DPS(15));
             tv2.setLayoutParams(params5);
-            tv2.setTextSize(DPS(6));
+            tv2.setTextSize(DPS(8));
             tv2.setTypeface(title2);
             tv2.setGravity(Gravity.CENTER_VERTICAL);
             tv2.setTextColor(Color.parseColor("#323031"));
