@@ -9,18 +9,17 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
         <LinearLayout
+            android:id="@+id/image_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <ImageView
                 android:id="@+id/img_cocktail_details"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:contentDescription="@string/bloody_mary_image"
-                android:maxHeight="300dp"
                 android:scaleType="centerCrop"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                 />
 
             <RelativeLayout
                 android:layout_width="match_parent"

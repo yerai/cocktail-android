@@ -1,6 +1,7 @@
 package com.example.cocktail;
 
 import android.annotation.TargetApi;
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,13 +20,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
@@ -50,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Fonts
         Typeface title = getResources().getFont(R.font.fredoka);
-        Typeface title2 = getResources().getFont(R.font.latobold);
+        final Typeface title2 = getResources().getFont(R.font.latobold);
         Typeface title3 = getResources().getFont(R.font.latoblack);
         Typeface text = getResources().getFont(R.font.montserratrregular);
 
@@ -75,7 +91,173 @@ public class MainActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.Categories)).setTextColor(Color.parseColor("#343035"));
 
         // Set Searchbar
-        ((SearchView) findViewById(R.id.searchBar)).setBackgroundResource(R.drawable.searchview_rounded);
+        final SearchView sv = findViewById(R.id.searchBar);
+        sv.setBackgroundResource(R.drawable.searchview_rounded);
+
+        /*LinearLayout.LayoutParams params8 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        params8.setMargins(DPS(20),DPS(10),DPS(20),DPS(10));
+        params8.weight= (float) 0.5;
+        sv.setLayoutParams(params8);
+
+        TextView cs = findViewById(R.id.closeSearch);
+        cs.setVisibility(View.GONE);
+
+        cs.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.Recent).setVisibility(View.VISIBLE);
+                findViewById(R.id.Recent_List).setVisibility(View.VISIBLE);
+                findViewById(R.id.Featured).setVisibility(View.VISIBLE);
+                findViewById(R.id.Featured_List).setVisibility(View.VISIBLE);
+                findViewById(R.id.Categories).setVisibility(View.VISIBLE);
+                findViewById(R.id.Categories1).setVisibility(View.VISIBLE);
+                findViewById(R.id.Categories2).setVisibility(View.VISIBLE);
+                findViewById(R.id.Categories3).setVisibility(View.VISIBLE);
+                findViewById(R.id.closeSearch).setVisibility(View.GONE);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                params.setMargins(DPS(20),DPS(10),DPS(20),DPS(10));
+                params.weight= (float) 0.5;
+                sv.setLayoutParams(params);
+                sv.clearFocus();
+
+            }
+        });
+
+        */
+        sv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sv.onActionViewExpanded();
+                /*findViewById(R.id.Recent).setVisibility(View.GONE);
+                findViewById(R.id.Recent_List).setVisibility(View.GONE);
+                findViewById(R.id.Featured).setVisibility(View.GONE);
+                findViewById(R.id.Featured_List).setVisibility(View.GONE);
+                findViewById(R.id.Categories).setVisibility(View.GONE);
+                findViewById(R.id.Categories1).setVisibility(View.GONE);
+                findViewById(R.id.Categories2).setVisibility(View.GONE);
+                findViewById(R.id.Categories3).setVisibility(View.GONE);
+                findViewById(R.id.closeSearch).setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                params.setMargins(DPS(20),DPS(10),DPS(0),DPS(10));
+                params.weight= (float) 0.5;
+                sv.setLayoutParams(params);*/
+
+            }
+        });
+
+
+        final RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        final MainActivity context = this;
+
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                callSearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(!newText.isEmpty()){
+                    callSearch(newText);
+                }else{
+                    ((LinearLayout)findViewById(R.id.Search_Results)).removeAllViews();
+                }
+                return false;
+            }
+
+            public void callSearch(String query) {
+
+                String url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + query;
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.GET, url, (JSONObject) null, new Response.Listener<JSONObject>() {
+
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Iterator<?> keys = response.keys();
+                                while(keys.hasNext() ) {
+                                    String key = (String)keys.next();
+                                    try {
+                                        JSONArray drinks = new JSONArray(response.get(key).toString());
+                                        ((LinearLayout)findViewById(R.id.Search_Results)).removeAllViews();
+
+                                        for(int i=0; i<drinks.length(); i++){
+                                            final JSONObject drink = drinks.getJSONObject(i);
+
+                                            final LinearLayout ll = new LinearLayout(context);
+                                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                            ll.setLayoutParams(params);
+                                            ll.setOrientation(LinearLayout.HORIZONTAL);
+
+                                            /* CardView */
+                                            CardView cv1 = new CardView(context);
+                                            cv1.setCardElevation(DPS(0));
+                                            cv1.setRadius(DPS(5));
+                                            CardView.LayoutParams params3 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(90),DPS(90)));
+                                            params3.setMargins(DPS(0),DPS(0),DPS(0),DPS(15));
+                                            cv1.setLayoutParams(params3);
+
+                                            /* ImageView */
+                                            ImageView iv1 = new ImageView(context);
+                                            iv1.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                            LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                                            iv1.setLayoutParams(params4);
+                                            new MainActivity.DownloadImageTask(iv1).execute(drink.getString("strDrinkThumb"));
+
+                                            /* TextView */
+                                            TextView tv2 = new TextView(context);
+                                            tv2.setText(drink.getString("strDrink"));
+                                            LinearLayout.LayoutParams params5 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                                            params5.weight=1;
+                                            params5.setMargins(DPS(20), 0, 0, DPS(15));
+                                            tv2.setLayoutParams(params5);
+                                            tv2.setTextSize(DPS(6));
+                                            tv2.setTypeface(title2);
+                                            tv2.setGravity(Gravity.CENTER_VERTICAL);
+                                            tv2.setTextColor(Color.parseColor("#323031"));
+
+                                            cv1.addView(iv1);
+                                            ll.addView(cv1);
+                                            ll.addView(tv2);
+                                            ((LinearLayout)findViewById(R.id.Search_Results)).addView(ll);
+
+                                            ll.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    Intent intent = new Intent(ll.getContext(), DetailsView.class);
+                                                    try {
+                                                        intent.putExtra("id", drink.getString("idDrink"));
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    ll.getContext().startActivity(intent);
+                                                }
+                                            });
+
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("debug", error.toString());
+                            }
+                        });
+
+                // add it to the RequestQueue
+                requestQueue.add(jsonObjectRequest);
+
+
+            }
+        });
+
 
         // Set Recent Cocktails
         if(RecentCocktailArrayList == null || RecentCocktailArrayList.size()<1){

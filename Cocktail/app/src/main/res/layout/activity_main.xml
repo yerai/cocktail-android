@@ -27,8 +27,12 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/title_home"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:textFontWeight="bold"
                 android:textSize="40dp" />
+
+
 
             <SearchView
                 android:id="@+id/searchBar"
@@ -39,6 +43,20 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
                 android:queryHint="Search cocktail, ingredient, ..."/>
+
+
+
+
+            <LinearLayout
+                android:id="@+id/Search_Results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:orientation="vertical"></LinearLayout>
+
+
+
 
             <TextView
                 android:id="@+id/Recent"
@@ -116,12 +134,13 @@
 
             </LinearLayout>
 
+
+
             <LinearLayout
                 android:id="@+id/Categories3"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:orientation="horizontal">
-
             </LinearLayout>
 
         </LinearLayout>
