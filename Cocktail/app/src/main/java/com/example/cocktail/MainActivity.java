@@ -227,6 +227,8 @@ public class MainActivity extends AppCompatActivity {
                                             ll.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View view) {
+
+                                                    RecentCocktailArrayList.add(new cocktail("hol", "https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
                                                     Intent intent = new Intent(ll.getContext(), DetailsView.class);
                                                     try {
                                                         intent.putExtra("id", drink.getString("idDrink"));
