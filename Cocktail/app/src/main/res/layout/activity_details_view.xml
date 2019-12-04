@@ -112,10 +112,9 @@
                 android:layout_height="match_parent">
 
                 <ListView
-                    android:id="@+id/Cocktails_Ingredients_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:paddingLeft="15dp" />
+                    android:id="@+id/Ingredients_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="600dp" />
 
             </RelativeLayout>
 
@@ -153,7 +152,7 @@
                 app:fontFamily="@font/open_sans_bold" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/txt_glass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
@@ -176,11 +175,12 @@
                 app:fontFamily="@font/open_sans_bold" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/txt_instructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
                 android:paddingTop="5dp"
+                android:paddingRight="15dp"
                 android:paddingBottom="10dp"
                 android:text="Stirring gently, pour all ingredients into highball glass. Garnish."
                 android:textColor="#000000"

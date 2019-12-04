@@ -1,32 +1,27 @@
 package com.example.cocktail;
 
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.view.Gravity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,40 +38,45 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class DetailsView extends AppCompatActivity {
 
-    public static final String TAG = "ListViewExample";
-
-    private ListView listView;
+    public static final String TAG = DetailsView.class.getSimpleName();
 
     TextView textView;
-    ImageView imageView;
     ToggleButton toggleButton;
     Spinner spinner;
     Button button;
+
+    ArrayList<HashMap<String, String>> ingredientsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Hide Top Bar
-        try
-        {
+        try {
             this.getSupportActionBar().hide();
+        } catch (NullPointerException e) {
         }
-        catch (NullPointerException e){}
 
         // Get ID from View
         String id = getIntent().getStringExtra("id");
+        // Get Data of Cocktail
+        final RequestQueue requestQueue = Volley.newRequestQueue(this);
+        final String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
+
+        setContentView(R.layout.activity_details_view);
+
+        spinner = findViewById(R.id.servings_spinner);
+        toggleButton = findViewById(R.id.myToggleButton);
+        button = findViewById(R.id.btn_share);
+        ingredientsList = new ArrayList<>();
 
         // Data structure of cocktail
         final cocktail cocktail_info = new cocktail();
-
-        // Get Data of Cocktail
-        final RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, (JSONObject) null, new Response.Listener<JSONObject>() {
@@ -85,12 +85,12 @@ public class DetailsView extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Iterator<?> keys = response.keys();
-                        while(keys.hasNext() ) {
-                            String key = (String)keys.next();
+                        while (keys.hasNext()) {
+                            String key = (String) keys.next();
                             try {
                                 JSONArray drinks = new JSONArray(response.get(key).toString());
 
-                                for(int i=0; i<drinks.length(); i++){
+                                for (int i = 0; i < drinks.length(); i++) {
                                     final JSONObject drink = drinks.getJSONObject(i);
 
                                     cocktail_info.name = drink.getString("strDrink");
@@ -98,7 +98,21 @@ public class DetailsView extends AppCompatActivity {
                                     cocktail_info.glass = drink.getString("strGlass");
                                     cocktail_info.instructions = drink.getString("strInstructions");
                                     cocktail_info.ingredient1 = drink.getString("strIngredient1");
+                                    cocktail_info.ingredient2 = drink.getString("strIngredient2");
+                                    cocktail_info.ingredient3 = drink.getString("strIngredient3");
+                                    cocktail_info.ingredient4 = drink.getString("strIngredient4");
+                                    cocktail_info.ingredient5 = drink.getString("strIngredient5");
+                                    cocktail_info.ingredient6 = drink.getString("strIngredient6");
+                                    cocktail_info.ingredient7 = drink.getString("strIngredient7");
+                                    cocktail_info.ingredient8 = drink.getString("strIngredient8");
                                     cocktail_info.measure1 = drink.getString("strMeasure1");
+                                    cocktail_info.measure2 = drink.getString("strMeasure2");
+                                    cocktail_info.measure3 = drink.getString("strMeasure3");
+                                    cocktail_info.measure4 = drink.getString("strMeasure4");
+                                    cocktail_info.measure5 = drink.getString("strMeasure5");
+                                    cocktail_info.measure6 = drink.getString("strMeasure6");
+                                    cocktail_info.measure7 = drink.getString("strMeasure7");
+                                    cocktail_info.measure8 = drink.getString("strMeasure8");
 
                                     // Set View
                                     // Title
@@ -106,15 +120,102 @@ public class DetailsView extends AppCompatActivity {
                                     textView.setText(cocktail_info.name);
 
                                     // Image
-                                    ImageView iv = (ImageView) findViewById(R.id.img_cocktail_details);
+                                    ImageView iv = findViewById(R.id.img_cocktail_details);
                                     iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                     LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, iv.getWidth()));
                                     iv.setLayoutParams(params4);
                                     new DetailsView.DownloadImageTask(iv).execute(cocktail_info.image);
 
+                                    // Glass
+                                    textView = findViewById(R.id.txt_glass);
+                                    textView.setText(cocktail_info.glass);
+
+                                    // Instructions
+                                    textView = findViewById(R.id.txt_instructions);
+                                    textView.setText(cocktail_info.instructions);
+
+                                    //Ingredients
+//                                    ImageView img = findViewById(R.id.img);
+
+                                    //URL images ingredients
+                                    String urlImgIngredient1 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient1 + "-Small.png";
+                                    String urlImgIngredient2 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient2 + "-Small.png";
+                                    String urlImgIngredient3 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient3 + "-Small.png";
+                                    String urlImgIngredient4 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient4 + "-Small.png";
+                                    String urlImgIngredient5 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient5 + "-Small.png";
+                                    String urlImgIngredient6 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient6 + "-Small.png";
+                                    String urlImgIngredient7 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient7 + "-Small.png";
+                                    String urlImgIngredient8 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient8 + "-Small.png";
+
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient1);
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient2);
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient3);
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient4);
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient5);
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient6);
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient7);
+//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient8);
+
+                                    Integer[] icons ={
+                                            R.drawable.lemon_juice,
+                                            R.drawable.lime,
+                                            R.drawable.vodka,
+                                            R.drawable.worcestershire_sauce,
+                                            R.drawable.tomato_juice,
+                                            R.drawable.tabasco_sauce,
+                                            R.drawable.tomato_juice,
+                                            R.drawable.tabasco_sauce
+                                    };
+
+                                    String[] ingredients ={
+                                            cocktail_info.ingredient1,
+                                            cocktail_info.ingredient2,
+                                            cocktail_info.ingredient3,
+                                            cocktail_info.ingredient4,
+                                            cocktail_info.ingredient5,
+                                            cocktail_info.ingredient6,
+                                            cocktail_info.ingredient7,
+                                            cocktail_info.ingredient8,
+                                    };
+
+                                    String[] measurements ={
+                                            cocktail_info.measure1,
+                                            cocktail_info.measure2,
+                                            cocktail_info.measure3,
+                                            cocktail_info.measure4,
+                                            cocktail_info.measure5,
+                                            cocktail_info.measure6,
+                                            cocktail_info.measure7,
+                                            cocktail_info.measure8,
+                                    };
+
+                                    for (int j = 0; j < 8; j++) {
+                                        HashMap<String, String> hm = new HashMap<>();
+                                        hm.put("Icons", Integer.toString(icons[j]));
+                                        hm.put("Ingredients", ingredients[j]);
+                                        hm.put("Measurements", measurements[j]);
+                                        ingredientsList.add(hm);
+                                    }
+
+                                    String[] from = {"Icons", "Ingredients", "Measurements"};
+                                    int[] to = {R.id.img, R.id.ingredient, R.id.measure};
+
+                                    SimpleAdapter simpleAdapter = new SimpleAdapter(getBaseContext(), ingredientsList, R.layout.list_item, from, to);
+                                    ListView androidListView = findViewById(R.id.Ingredients_list);
+                                    androidListView.setAdapter(simpleAdapter);
                                 }
-                            } catch (JSONException e) {
+                            } catch (final JSONException e) {
                                 e.printStackTrace();
+                                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Json parsing error: " + e.getMessage(),
+                                                Toast.LENGTH_LONG)
+                                                .show();
+                                    }
+                                });
                             }
                         }
                     }
@@ -129,13 +230,7 @@ public class DetailsView extends AppCompatActivity {
         // add it to the RequestQueue
         requestQueue.add(jsonObjectRequest);
 
-        setContentView(R.layout.activity_details_view);
-
-        spinner = findViewById(R.id.servings_spinner);
-        toggleButton = findViewById(R.id.myToggleButton);
-        listView = findViewById(R.id.Cocktails_Ingredients_list);
-        button = findViewById(R.id.btn_share);
-
+        //Favourite toggle button
         toggleButton.setChecked(false);
         toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -148,6 +243,7 @@ public class DetailsView extends AppCompatActivity {
             }
         });
 
+        //Number of servings
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("1");
         arrayList.add("2");
@@ -155,7 +251,7 @@ public class DetailsView extends AppCompatActivity {
         arrayList.add("4");
         arrayList.add("5");
         arrayList.add("6");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, arrayList);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayList);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(arrayAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -163,70 +259,13 @@ public class DetailsView extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String tutorialsName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(parent.getContext(), "Selected: " + tutorialsName,          Toast.LENGTH_LONG).show();
+                Toast.makeText(parent.getContext(), "Selected: " + tutorialsName, Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView <?> parent) {
             }
         });
-
-
-
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(TAG, "onItemClick: " +position);
-                CheckedTextView v = (CheckedTextView) view;
-                boolean currentCheck = v.isChecked();
-                UserAccount user = (UserAccount)listView.getItemAtPosition(position);
-                user.setActive(!currentCheck);
-            }
-        });
-        UserAccount vodka = new UserAccount("vodka","1/2 oz", false);
-        UserAccount lemon = new UserAccount("Lemon juice","1 dash", false);
-        UserAccount tomato = new UserAccount("Tomato juice","2 dash", false);
-        UserAccount worcestershire = new UserAccount(" Worcestershire Sauce","1/2 tsp", false);
-        UserAccount lime = new UserAccount("Lime","1 wedge", false);
-        UserAccount tobasco = new UserAccount("Tobasco sauce","2 drops", false);
-
-        UserAccount[] users = new UserAccount[]{vodka,lemon, tomato, worcestershire, lime, tobasco};
-
-        ArrayAdapter<UserAccount> arrayAdapter2
-                = new ArrayAdapter<UserAccount>(this, android.R.layout.simple_list_item_multiple_choice , users);
-
-
-        listView.setAdapter(arrayAdapter2);
-
-        for(int i=0;i< users.length; i++ )  {
-            listView.setItemChecked(i,users[i].isActive());
-        }
     }
-
-    public void printSelectedItems(View view)  {
-
-        SparseBooleanArray sp = listView.getCheckedItemPositions();
-
-        StringBuilder sb= new StringBuilder();
-
-        for(int i=0;i<sp.size();i++){
-            if(sp.valueAt(i)==true){
-                UserAccount user= (UserAccount) listView.getItemAtPosition(i);
-                // Or:
-                // String s = ((CheckedTextView) listView.getChildAt(i)).getText().toString();
-                String s= user.getUserName();
-                sb = sb.append(" "+s);
-            }
-        }
-        Toast.makeText(this, "Selected items are: "+sb.toString(), Toast.LENGTH_LONG).show();
-
-    }
-
-    public void myClickHandler(View target) {
-        printSelectedItems(listView);
-    }
-
 
     // Function to download IMG from URL
     static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -237,7 +276,7 @@ public class DetailsView extends AppCompatActivity {
                     .execute(cocktailArrayList.get(0).image);
             ((TextView)findViewById(R.id.text_recent1)).setText(cocktailArrayList.get(0).name);*/
 
-        public DownloadImageTask(ImageView bmImage) {
+        private DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 
