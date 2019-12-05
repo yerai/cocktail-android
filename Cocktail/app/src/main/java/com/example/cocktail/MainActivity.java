@@ -624,6 +624,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     static void addRecent(String id, String name, String image){
+        for(int i=0; i<RecentCocktailArrayList.size(); i++){
+            if (RecentCocktailArrayList.get(i).id.equals(id)){
+               RecentCocktailArrayList.remove(i);
+            }
+        }
         RecentCocktailArrayList.add(0,new cocktail(id,name,image));
     }
 
@@ -633,6 +638,24 @@ public class MainActivity extends AppCompatActivity {
 
     static void removeFavorite(int id){
         FavoritesCocktailArrayList.remove(id);
+    }
+
+    static void removeFavoriteByID(String id){
+        for (int i = 0; i<FavoritesCocktailArrayList.size(); i++){
+            if (FavoritesCocktailArrayList.get(i).id.equals(id)){
+                FavoritesCocktailArrayList.remove(id);
+            }
+        }
+    }
+
+    static boolean checkFavorite (String id){
+        boolean result = false;
+        for (int i = 0; i<FavoritesCocktailArrayList.size(); i++){
+            if (FavoritesCocktailArrayList.get(i).id.equals(id)){
+               result = true;
+            }
+        }
+        return result;
     }
 
     static ArrayList<cocktail> getFavorites(){

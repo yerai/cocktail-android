@@ -3,12 +3,16 @@ package com.example.cocktail;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -52,6 +56,7 @@ public class DetailsView extends AppCompatActivity {
 
     ArrayList<HashMap<String, String>> ingredientsList;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +68,7 @@ public class DetailsView extends AppCompatActivity {
         }
 
         // Get ID from View
-        String id = getIntent().getStringExtra("id");
+        final String id = getIntent().getStringExtra("id");
         // Get Data of Cocktail
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
         final String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
@@ -124,7 +129,7 @@ public class DetailsView extends AppCompatActivity {
                                     iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                     LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, iv.getWidth()));
                                     iv.setLayoutParams(params4);
-                                    new DetailsView.DownloadImageTask(iv).execute(cocktail_info.image);
+                                    new DownloadImageTask(iv).execute(cocktail_info.image);
 
                                     // Glass
                                     textView = findViewById(R.id.txt_glass);
@@ -147,6 +152,7 @@ public class DetailsView extends AppCompatActivity {
                                     String urlImgIngredient7 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient7 + "-Small.png";
                                     String urlImgIngredient8 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient8 + "-Small.png";
 
+
 //                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient1);
 //                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient2);
 //                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient3);
@@ -155,6 +161,9 @@ public class DetailsView extends AppCompatActivity {
 //                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient6);
 //                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient7);
 //                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient8);
+                                    ImageView hola = new ImageView(DetailsView.this);
+                                    new DetailsView.DownloadImageTask(hola).execute(urlImgIngredient1);
+
 
                                     Integer[] icons ={
                                             R.drawable.lemon_juice,
@@ -189,6 +198,8 @@ public class DetailsView extends AppCompatActivity {
                                             cocktail_info.measure8,
                                     };
 
+
+
                                     for (int j = 0; j < 8; j++) {
                                         HashMap<String, String> hm = new HashMap<>();
                                         hm.put("Icons", Integer.toString(icons[j]));
@@ -218,6 +229,36 @@ public class DetailsView extends AppCompatActivity {
                                 });
                             }
                         }
+
+
+
+
+                        //Favourite toggle button
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if(MainActivity.checkFavorite(id) == true){
+                                toggleButton.setChecked(true);
+                                toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
+                            }else{
+                                toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
+                                toggleButton.setChecked(false);
+                            }
+                        }
+
+                        //toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
+                        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                if (isChecked) {
+                                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
+                                    MainActivity.addFavorite(id, cocktail_info.name, cocktail_info.image);
+                                }else{
+                                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
+                                    MainActivity.removeFavoriteByID(id);
+                                }
+                            }
+                        });
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -230,18 +271,7 @@ public class DetailsView extends AppCompatActivity {
         // add it to the RequestQueue
         requestQueue.add(jsonObjectRequest);
 
-        //Favourite toggle button
-        toggleButton.setChecked(false);
-        toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
-        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
-                else
-                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
-            }
-        });
+
 
         //Number of servings
         ArrayList<String> arrayList = new ArrayList<>();
@@ -271,11 +301,6 @@ public class DetailsView extends AppCompatActivity {
     static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
-
-        /*new DownloadImageTask((ImageView) findViewById(R.id.img_recent1))
-                    .execute(cocktailArrayList.get(0).image);
-            ((TextView)findViewById(R.id.text_recent1)).setText(cocktailArrayList.get(0).name);*/
-
         private DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
@@ -296,5 +321,11 @@ public class DetailsView extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+    // DPS to Pixels Function
+    private int DPS(int dps){
+        final float scale = this.getResources().getDisplayMetrics().density;
+        return (int) (dps * scale + 0.5f);
     }
 }
