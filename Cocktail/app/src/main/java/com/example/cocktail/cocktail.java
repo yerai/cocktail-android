@@ -29,7 +29,7 @@ public class cocktail {
         this.name = name;
         this.image = image;
     }
-    public cocktail(){
+    public cocktail(String id){
     }
 
     public cocktail(String id, String name, String image){
@@ -37,6 +37,8 @@ public class cocktail {
         this.name = name;
         this.image = image;
     }
+
+    public cocktail(){};
 
 
 

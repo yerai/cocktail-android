@@ -50,16 +50,24 @@ public class collection extends AppCompatActivity {
         String collectionName = getIntent().getStringExtra("title");
         String collectionPicture = getIntent().getStringExtra("photo");
 
-        if(collectionName.equals("Top 15")){
-            FeaturedCocktailArrayList.add(new cocktail("Bloody Mary", "https://www.thecocktaildb.com/images/media/drink/uyquuu1439906954.jpg"));
+        if(collectionName.equals("Top 10")){
             FeaturedCocktailArrayList.add(new cocktail("11000","Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
-            FeaturedCocktailArrayList.add(new cocktail("Daiquiri", "https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
-            FeaturedCocktailArrayList.add(new cocktail("Whiskey Sour", "https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11001","Old Fashioned", "https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11002","Long Island Tea","https://www.thecocktaildb.com/images/media/drink/ywxwqs1439906072.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11003","Negroni","https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11004","Whiskey Sour","https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11005","Dry Martini","https://www.thecocktaildb.com/images/media/drink/71t8581504353095.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11006","Daiquiri","https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11007","Margarita","https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11008","Manhattan","https://www.thecocktaildb.com/images/media/drink/ec2jtz1504350429.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11009","Moscow Mule","https://www.thecocktaildb.com/images/media/drink/3pylqc1504370988.jpg"));
         }else if(collectionName.equals("Christmas Collection")){
-            FeaturedCocktailArrayList.add(new cocktail("Daiquiri", "https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
-            FeaturedCocktailArrayList.add(new cocktail("Bloody Mary", "https://www.thecocktaildb.com/images/media/drink/uyquuu1439906954.jpg"));
-            FeaturedCocktailArrayList.add(new cocktail("Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
-            FeaturedCocktailArrayList.add(new cocktail("Whiskey Sour", "https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("12784","Thai Iced Coffee","https://www.thecocktaildb.com/images/media/drink/rqpypv1441245650.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("17167","Raspberry Cooler","https://www.thecocktaildb.com/images/media/drink/suqyyx1441254346.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("14842","Midnight Mint","https://www.thecocktaildb.com/images/media/drink/svuvrq1441208310.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("12770","Iced Coffee","https://www.thecocktaildb.com/images/media/drink/ytprxy1454513855.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("17220","Butter Baby","https://www.thecocktaildb.com/images/media/drink/1xhjk91504783763.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("15254","Zenmeister","https://www.thecocktaildb.com/images/media/drink/qyuvsu1479209462.jpg"));
         }else{
 
         }
@@ -99,7 +107,7 @@ public class collection extends AppCompatActivity {
         // Featured List
         for(int i = 0; i<FeaturedCocktailArrayList.size(); i++){
             /* Linear Layout */
-            LinearLayout ll = new LinearLayout(this);
+            final LinearLayout ll = new LinearLayout(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             ll.setLayoutParams(params);
             ll.setOrientation(LinearLayout.HORIZONTAL);
@@ -126,7 +134,7 @@ public class collection extends AppCompatActivity {
             params5.weight=1;
             params5.setMargins(DPS(20), 0, 0, DPS(15));
             tv2.setLayoutParams(params5);
-            tv2.setTextSize(DPS(8));
+            tv2.setTextSize(DPS(7));
             tv2.setTypeface(title2);
             tv2.setGravity(Gravity.CENTER_VERTICAL);
             tv2.setTextColor(Color.parseColor("#323031"));
@@ -135,9 +143,18 @@ public class collection extends AppCompatActivity {
             ll.addView(cv1);
             ll.addView(tv2);
             ((LinearLayout)findViewById(R.id.collection_list_layout)).addView(ll);
+
+            final int finalI = i;
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity.addRecent(FeaturedCocktailArrayList.get(finalI).id,FeaturedCocktailArrayList.get(finalI).name,FeaturedCocktailArrayList.get(finalI).image);
+                    Intent intent = new Intent(ll.getContext(), DetailsView.class);
+                    intent.putExtra("id",FeaturedCocktailArrayList.get(finalI).id );
+                    ll.getContext().startActivity(intent);
+                }
+            });
         }
-
-
 
     }
 

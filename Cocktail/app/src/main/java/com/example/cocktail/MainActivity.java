@@ -41,8 +41,9 @@ import java.util.Iterator;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<cocktail> RecentCocktailArrayList = new ArrayList<cocktail>();
+    private static ArrayList<cocktail> RecentCocktailArrayList = new ArrayList<cocktail>();
     private ArrayList<featured> FeaturedArrayList = new ArrayList<featured>();
+    private static ArrayList<cocktail> FavoritesCocktailArrayList = new ArrayList<cocktail>();
 
     final MainActivity context = this;
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         Typeface text = getResources().getFont(R.font.montserratrregular);
 
         // Add Featured Cocktails
-        FeaturedArrayList.add(new featured("Top 15", "https://github.com/yerai/cocktail/blob/master/img/featured-1.jpg?raw=true", "Our top selection of Cocktails!"));
+        FeaturedArrayList.add(new featured("Top 10", "https://github.com/yerai/cocktail/blob/master/img/featured-1.jpg?raw=true", "Our top selection of Cocktails!"));
         FeaturedArrayList.add(new featured("Christmas Collection", "https://github.com/yerai/cocktail/blob/master/img/featured-2.jpg?raw=true", "Best selection to greet Santa."));
 
         // Set titles
@@ -553,6 +554,8 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.Recent).setVisibility(View.VISIBLE);
             findViewById(R.id.Recent_List).setVisibility(View.VISIBLE);
 
+            ((LinearLayout)findViewById(R.id.Recent_List_Container)).removeAllViews();
+
             for (int i=0; i<RecentCocktailArrayList.size(); i++){
 
                 /* Linear Layout */
@@ -620,8 +623,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public ArrayList<cocktail> getRecent() {
-        return RecentCocktailArrayList;
+    static void addRecent(String id, String name, String image){
+        RecentCocktailArrayList.add(0,new cocktail(id,name,image));
+    }
+
+    static void addFavorite(String id, String name, String image){
+        FavoritesCocktailArrayList.add(0,new cocktail(id,name,image));
+    }
+
+    static void removeFavorite(int id){
+        FavoritesCocktailArrayList.remove(id);
+    }
+
+    static ArrayList<cocktail> getFavorites(){
+        return FavoritesCocktailArrayList;
     }
 
     // DPS to Pixels Function

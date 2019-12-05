@@ -1,16 +1,25 @@
 package com.example.cocktail;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -23,12 +32,8 @@ public class Favorites extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Add Recent Cocktails
-        FavoritesCocktailArrayList.add(new cocktail("Bloody Mary", "https://www.thecocktaildb.com/images/media/drink/uyquuu1439906954.jpg"));
-        FavoritesCocktailArrayList.add(new cocktail("Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
-        FavoritesCocktailArrayList.add(new cocktail("Daiquiri", "https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
-        FavoritesCocktailArrayList.add(new cocktail("Whiskey Sour", "https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
-
+        FavoritesCocktailArrayList.clear();
+        FavoritesCocktailArrayList = MainActivity.getFavorites();
 
         // Hide Top Bar
         try
@@ -38,6 +43,26 @@ public class Favorites extends AppCompatActivity {
         catch (NullPointerException e){}
 
         setContentView(R.layout.activity_favorites);
+
+        // Navigation bar
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_home:
+                        Intent a = new Intent(Favorites.this,MainActivity.class);
+                        startActivity(a);
+                        break;
+                    case R.id.navigation_favorites:
+                        Intent b = new Intent(Favorites.this,Favorites.class);
+                        startActivity(b);
+
+                        break;
+                }
+                return false;
+            }
+        });
 
         //Fonts
         Typeface title = getResources().getFont(R.font.fredoka);
@@ -49,10 +74,12 @@ public class Favorites extends AppCompatActivity {
         ((TextView)findViewById(R.id.favorites_title)).setTypeface(title);
         ((TextView)findViewById(R.id.favorites_title)).setTextColor(Color.parseColor("#343035"));
 
+        ((LinearLayout) findViewById(R.id.first_column)).removeAllViews();
+        ((LinearLayout) findViewById(R.id.second_column)).removeAllViews();
 
         for(int i= 0; i<FavoritesCocktailArrayList.size(); i++){
             /* Linear Layout */
-            LinearLayout ll = new LinearLayout(this);
+            final LinearLayout ll = new LinearLayout(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             ll.setLayoutParams(params);
             ll.setOrientation(LinearLayout.VERTICAL);
@@ -87,12 +114,22 @@ public class Favorites extends AppCompatActivity {
             tv.setLayoutParams(params3);
 
             /* Image View */
-            ImageView iv2 = new ImageView(this);
+            final ImageView iv2 = new ImageView(this);
             iv2.setScaleType(ImageView.ScaleType.CENTER_CROP);
             LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams((new LinearLayout.LayoutParams(80,80)));
             params4.setMargins(DPS(23),DPS(5),0,0);
             iv2.setLayoutParams(params4);
-            new MainActivity.DownloadImageTask(iv2).execute("https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678087-heart-512.png");
+            iv2.setBackgroundResource(R.drawable.heart_fill);
+
+            final int finalI = i;
+            iv2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    iv2.setBackgroundResource(R.drawable.heart_border);
+                    MainActivity.removeFavorite(finalI);
+                }
+            });
+
 
             cv.addView(iv);
             ll2.addView(iv2);
