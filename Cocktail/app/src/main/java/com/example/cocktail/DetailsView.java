@@ -1,24 +1,26 @@
 package com.example.cocktail;
 
 import android.app.ProgressDialog;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.view.Gravity;
+import android.util.SparseBooleanArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -44,15 +46,22 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class DetailsView extends AppCompatActivity {
 
+    // Log tag
     public static final String TAG = DetailsView.class.getSimpleName();
+
+    // Movies json url
+    private ProgressDialog pDialog;
+    private ListView listView;
 
     TextView textView;
     ToggleButton toggleButton;
     Spinner spinner;
     Button button;
+    CheckBox checkBox;
 
     ArrayList<HashMap<String, String>> ingredientsList;
 
@@ -60,6 +69,12 @@ public class DetailsView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_details_view);
+
+        pDialog = new ProgressDialog(this);
+        // Showing progress dialog before making http request
+        pDialog.setMessage("Loading...");
+        pDialog.show();
 
         // Hide Top Bar
         try {
@@ -73,12 +88,12 @@ public class DetailsView extends AppCompatActivity {
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
         final String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
 
-        setContentView(R.layout.activity_details_view);
-
+        checkBox = findViewById(R.id.checkBox);
         spinner = findViewById(R.id.servings_spinner);
         toggleButton = findViewById(R.id.myToggleButton);
         button = findViewById(R.id.btn_share);
         ingredientsList = new ArrayList<>();
+        final ListView ingredientsListview = findViewById(R.id.Ingredients_list);
 
         // Data structure of cocktail
         final cocktail cocktail_info = new cocktail();
@@ -89,6 +104,7 @@ public class DetailsView extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onResponse(JSONObject response) {
+                        hidePDialog();
                         Iterator<?> keys = response.keys();
                         while (keys.hasNext()) {
                             String key = (String) keys.next();
@@ -131,7 +147,7 @@ public class DetailsView extends AppCompatActivity {
                                     iv.setLayoutParams(params4);
                                     new DownloadImageTask(iv).execute(cocktail_info.image);
 
-                                    // Glass
+                                    // Glass text
                                     textView = findViewById(R.id.txt_glass);
                                     textView.setText(cocktail_info.glass);
 
@@ -139,55 +155,86 @@ public class DetailsView extends AppCompatActivity {
                                     textView = findViewById(R.id.txt_instructions);
                                     textView.setText(cocktail_info.instructions);
 
-                                    //Ingredients
-//                                    ImageView img = findViewById(R.id.img);
-
-                                    //URL images ingredients
-                                    String urlImgIngredient1 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient1 + "-Small.png";
-                                    String urlImgIngredient2 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient2 + "-Small.png";
-                                    String urlImgIngredient3 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient3 + "-Small.png";
-                                    String urlImgIngredient4 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient4 + "-Small.png";
-                                    String urlImgIngredient5 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient5 + "-Small.png";
-                                    String urlImgIngredient6 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient6 + "-Small.png";
-                                    String urlImgIngredient7 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient7 + "-Small.png";
-                                    String urlImgIngredient8 = "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient8 + "-Small.png";
-
-
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient1);
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient2);
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient3);
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient4);
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient5);
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient6);
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient7);
-//                                        new DetailsView.DownloadImageTask(img).execute(urlImgIngredient8);
-                                    ImageView hola = new ImageView(DetailsView.this);
-                                    new DetailsView.DownloadImageTask(hola).execute(urlImgIngredient1);
-
-
-                                    Integer[] icons ={
-                                            R.drawable.lemon_juice,
-                                            R.drawable.lime,
-                                            R.drawable.vodka,
-                                            R.drawable.worcestershire_sauce,
-                                            R.drawable.tomato_juice,
-                                            R.drawable.tabasco_sauce,
-                                            R.drawable.tomato_juice,
-                                            R.drawable.tabasco_sauce
+                                    String[] imageURLArray = new String[]{
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient1 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient2 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient3 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient4 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient5 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient6 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient7 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient8 + "-Small.png"
                                     };
 
-                                    String[] ingredients ={
-                                            cocktail_info.ingredient1,
-                                            cocktail_info.ingredient2,
-                                            cocktail_info.ingredient3,
-                                            cocktail_info.ingredient4,
-                                            cocktail_info.ingredient5,
-                                            cocktail_info.ingredient6,
-                                            cocktail_info.ingredient7,
-                                            cocktail_info.ingredient8,
-                                    };
+                                    ImageView imgIngredient1 = findViewById(R.id.img_ingredient1);
+                                    ImageView imgIngredient2 = findViewById(R.id.img_ingredient2);
+                                    ImageView imgIngredient3 = findViewById(R.id.img_ingredient3);
+                                    ImageView imgIngredient4 = findViewById(R.id.img_ingredient4);
+                                    ImageView imgIngredient5 = findViewById(R.id.img_ingredient5);
+                                    ImageView imgIngredient6 = findViewById(R.id.img_ingredient6);
+                                    ImageView imgIngredient7 = findViewById(R.id.img_ingredient7);
+                                    ImageView imgIngredient8 = findViewById(R.id.img_ingredient8);
 
-                                    String[] measurements ={
+                                    String[] ingredients = new String[8];
+
+                                    if (cocktail_info.ingredient1.equals("null")) {
+                                        imgIngredient1.setVisibility(View.GONE);
+                                        ingredients[0] = "null";
+                                    } else {
+                                        ingredients[0] = cocktail_info.ingredient1;
+                                        new DownloadImageTask(imgIngredient1).execute(imageURLArray[0]);
+                                    }
+                                    if (cocktail_info.ingredient2.equals("null")) {
+                                        imgIngredient2.setVisibility(View.GONE);
+                                        ingredients[1] = "null";
+                                    } else {
+                                        ingredients[1] = cocktail_info.ingredient2;
+                                        new DownloadImageTask(imgIngredient2).execute(imageURLArray[1]);
+                                    }
+                                    if (cocktail_info.ingredient3.equals("null")) {
+                                        imgIngredient3.setVisibility(View.GONE);
+                                        ingredients[2] = "null";
+                                    } else {
+                                        ingredients[2] = cocktail_info.ingredient3;
+                                        new DownloadImageTask(imgIngredient3).execute(imageURLArray[2]);
+                                    }
+                                    if (cocktail_info.ingredient4.equals("null")) {
+                                        imgIngredient4.setVisibility(View.GONE);
+                                        ingredients[3] = "null";
+                                    } else {
+                                        ingredients[3] = cocktail_info.ingredient4;
+                                        new DownloadImageTask(imgIngredient4).execute(imageURLArray[3]);
+                                    }
+                                    if (cocktail_info.ingredient5.equals("null")) {
+                                        imgIngredient5.setVisibility(View.GONE);
+                                        ingredients[4] = "null";
+                                    } else {
+                                        ingredients[4] = cocktail_info.ingredient5;
+                                        new DownloadImageTask(imgIngredient5).execute(imageURLArray[4]);
+                                    }
+                                    if (cocktail_info.ingredient6.equals("null")) {
+                                        imgIngredient6.setVisibility(View.GONE);
+                                        ingredients[5] = "null";
+                                    } else {
+                                        ingredients[5] = cocktail_info.ingredient6;
+                                        new DownloadImageTask(imgIngredient6).execute(imageURLArray[5]);
+                                    }
+                                    if (cocktail_info.ingredient7.equals("null")) {
+                                        imgIngredient7.setVisibility(View.GONE);
+                                        ingredients[6] = "null";
+                                    } else {
+                                        ingredients[6] = cocktail_info.ingredient7;
+                                        new DownloadImageTask(imgIngredient7).execute(imageURLArray[6]);
+                                    }
+                                    if (cocktail_info.ingredient8.equals("null")) {
+                                        ingredients[7] = "null";
+                                        imgIngredient8.setVisibility(View.GONE);
+                                    } else {
+                                        ingredients[7] = cocktail_info.ingredient8;
+                                        new DownloadImageTask(imgIngredient8).execute(imageURLArray[7]);
+                                    }
+
+                                    String[] measurements = {
                                             cocktail_info.measure1,
                                             cocktail_info.measure2,
                                             cocktail_info.measure3,
@@ -199,25 +246,28 @@ public class DetailsView extends AppCompatActivity {
                                     };
 
 
-
-                                    for (int j = 0; j < 8; j++) {
-                                        HashMap<String, String> hm = new HashMap<>();
-                                        hm.put("Icons", Integer.toString(icons[j]));
-                                        hm.put("Ingredients", ingredients[j]);
-                                        hm.put("Measurements", measurements[j]);
-                                        ingredientsList.add(hm);
+                                    for (int j = 0; j < ingredients.length; j++) {
+                                        if (ingredients[j] == "null") {
+                                        } else {
+                                            HashMap<String, String> hm = new HashMap<>();
+                                            hm.put("Ingredients", ingredients[j]);
+                                            hm.put("Measurements", measurements[j]);
+                                            ingredientsList.add(hm);
+                                        }
                                     }
 
-                                    String[] from = {"Icons", "Ingredients", "Measurements"};
-                                    int[] to = {R.id.img, R.id.ingredient, R.id.measure};
+                                    String[] from = {"Ingredients", "Measurements"};
+                                    int[] to = {R.id.ingredient, R.id.measurement};
 
                                     SimpleAdapter simpleAdapter = new SimpleAdapter(getBaseContext(), ingredientsList, R.layout.list_item, from, to);
-                                    ListView androidListView = findViewById(R.id.Ingredients_list);
-                                    androidListView.setAdapter(simpleAdapter);
+                                    ingredientsListview.setAdapter(simpleAdapter);
+
+                                    setListViewHeightBasedOnChildren(ingredientsListview);
                                 }
                             } catch (final JSONException e) {
                                 e.printStackTrace();
                                 Log.e(TAG, "Json parsing error: " + e.getMessage());
+                                hidePDialog();
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -230,15 +280,12 @@ public class DetailsView extends AppCompatActivity {
                             }
                         }
 
-
-
-
                         //Favourite toggle button
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            if(MainActivity.checkFavorite(id) == true){
+                            if (MainActivity.checkFavorite(id) == true) {
                                 toggleButton.setChecked(true);
                                 toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
-                            }else{
+                            } else {
                                 toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
                                 toggleButton.setChecked(false);
                             }
@@ -252,7 +299,7 @@ public class DetailsView extends AppCompatActivity {
                                 if (isChecked) {
                                     toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
                                     MainActivity.addFavorite(id, cocktail_info.name, cocktail_info.image);
-                                }else{
+                                } else {
                                     toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
                                     MainActivity.removeFavoriteByID(id);
                                 }
@@ -270,8 +317,6 @@ public class DetailsView extends AppCompatActivity {
 
         // add it to the RequestQueue
         requestQueue.add(jsonObjectRequest);
-
-
 
         //Number of servings
         ArrayList<String> arrayList = new ArrayList<>();
@@ -291,10 +336,24 @@ public class DetailsView extends AppCompatActivity {
                 String tutorialsName = parent.getItemAtPosition(position).toString();
                 Toast.makeText(parent.getContext(), "Selected: " + tutorialsName, Toast.LENGTH_LONG).show();
             }
+
             @Override
-            public void onNothingSelected(AdapterView <?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        hidePDialog();
+    }
+
+    private void hidePDialog() {
+        if (pDialog != null) {
+            pDialog.dismiss();
+            pDialog = null;
+        }
     }
 
     // Function to download IMG from URL
@@ -324,8 +383,28 @@ public class DetailsView extends AppCompatActivity {
     }
 
     // DPS to Pixels Function
-    private int DPS(int dps){
+    private int DPS(int dps) {
         final float scale = this.getResources().getDisplayMetrics().density;
         return (int) (dps * scale + 0.5f);
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }
