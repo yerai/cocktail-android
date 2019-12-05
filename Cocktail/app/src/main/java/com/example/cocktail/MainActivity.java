@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         sv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("hello", "click");
                 sv.onActionViewExpanded();
 
             }
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                Log.d("hello", "one");
                 callSearch(query);
                 return false;
             }
@@ -128,9 +130,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if(!newText.isEmpty()){
+                    Log.d("hello", "two");
                     callSearch(newText);
                 }else{
+                    Log.d("hello", "three");
                     ((LinearLayout)findViewById(R.id.Search_Results)).removeAllViews();
+                    Log.d("hello", "four");
                 }
                 return false;
             }
@@ -144,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onResponse(JSONObject response) {
+                                Log.d("hello", "five");
                                 Iterator<?> keys = response.keys();
                                 while(keys.hasNext() ) {
                                     String key = (String)keys.next();
@@ -220,13 +226,12 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Log.d("debug", error.toString());
+                                Log.d("hello", error.toString());
                             }
                         });
 
                 // add it to the RequestQueue
                 requestQueue.add(jsonObjectRequest);
-
 
             }
         });

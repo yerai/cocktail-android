@@ -25,12 +25,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:text="@string/title_home"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:textFontWeight="bold"
-                android:textSize="40dp" />
+                android:text="@string/title_home"
+                android:textStyle="bold"
+                android:textSize="40sp" />
 
 
 
@@ -43,8 +44,6 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
                 android:queryHint="Search cocktail, ingredient, ..."/>
-
-
 
 
             <LinearLayout
@@ -63,10 +62,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginBottom="10dp"
                 android:text="Recent"
-                android:textFontWeight="bold"
-                android:textSize="25dp" />
+                android:textSize="25sp" />
 
             <HorizontalScrollView
                 android:id="@+id/Recent_List"
@@ -87,11 +86,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:text="Featured"
-                android:textFontWeight="bold"
-                android:textSize="25dp" />
+                android:textSize="25sp" />
 
             <HorizontalScrollView
                 android:id="@+id/Featured_List"
@@ -112,11 +111,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:text="Categories"
-                android:textFontWeight="bold"
-                android:textSize="25dp" />
+                android:textSize="25sp" />
 
             <LinearLayout
                 android:id="@+id/Categories1"
