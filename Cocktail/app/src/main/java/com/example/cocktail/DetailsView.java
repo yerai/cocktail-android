@@ -2,7 +2,7 @@ package com.example.cocktail;
 
 import android.app.ProgressDialog;
 
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -46,7 +46,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 public class DetailsView extends AppCompatActivity {
 
@@ -55,15 +54,14 @@ public class DetailsView extends AppCompatActivity {
 
     // Movies json url
     private ProgressDialog pDialog;
-    private ListView listView;
 
     TextView textView;
     ToggleButton toggleButton;
     Spinner spinner;
     Button button;
-    CheckBox checkBox;
 
     ArrayList<HashMap<String, String>> ingredientsList;
+    String[] ingredients;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -88,10 +86,8 @@ public class DetailsView extends AppCompatActivity {
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
         final String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
 
-        checkBox = findViewById(R.id.checkBox);
-        spinner = findViewById(R.id.servings_spinner);
+//        spinner = findViewById(R.id.servings_spinner);
         toggleButton = findViewById(R.id.myToggleButton);
-        button = findViewById(R.id.btn_share);
         ingredientsList = new ArrayList<>();
         final ListView ingredientsListview = findViewById(R.id.Ingredients_list);
 
@@ -175,7 +171,7 @@ public class DetailsView extends AppCompatActivity {
                                     ImageView imgIngredient7 = findViewById(R.id.img_ingredient7);
                                     ImageView imgIngredient8 = findViewById(R.id.img_ingredient8);
 
-                                    String[] ingredients = new String[8];
+                                    ingredients = new String[8];
 
                                     if (cocktail_info.ingredient1.equals("null")) {
                                         imgIngredient1.setVisibility(View.GONE);
@@ -262,6 +258,15 @@ public class DetailsView extends AppCompatActivity {
                                     SimpleAdapter simpleAdapter = new SimpleAdapter(getBaseContext(), ingredientsList, R.layout.list_item, from, to);
                                     ingredientsListview.setAdapter(simpleAdapter);
 
+                                    //perform listView item click event
+                                    ingredientsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            Toast.makeText(getApplicationContext(), ingredients[i], Toast.LENGTH_LONG).show();//show the selected image in toast according to position
+
+                                        }
+                                    });
+
                                     setListViewHeightBasedOnChildren(ingredientsListview);
                                 }
                             } catch (final JSONException e) {
@@ -317,28 +322,55 @@ public class DetailsView extends AppCompatActivity {
 
         // add it to the RequestQueue
         requestQueue.add(jsonObjectRequest);
+//
+//        //Number of servings
+//        ArrayList<String> arrayList = new ArrayList<>();
+//        arrayList.add("1");
+//        arrayList.add("2");
+//        arrayList.add("3");
+//        arrayList.add("4");
+//        arrayList.add("5");
+//        arrayList.add("6");
+//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayList);
+//        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(arrayAdapter);
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                String tutorialsName = parent.getItemAtPosition(position).toString();
+//                Toast.makeText(parent.getContext(), "Selected: " + tutorialsName, Toast.LENGTH_LONG).show();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//            }
+//        });
 
-        //Number of servings
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("1");
-        arrayList.add("2");
-        arrayList.add("3");
-        arrayList.add("4");
-        arrayList.add("5");
-        arrayList.add("6");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayList);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(arrayAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        button = findViewById(R.id.btn_share);
 
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String tutorialsName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(parent.getContext(), "Selected: " + tutorialsName, Toast.LENGTH_LONG).show();
-            }
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                final StringBuilder ingredientsBuilder = new StringBuilder();
+                for(int i = 0; i < ingredients.length; i++){
+                    if (ingredients[i] == "null") {
+                    }else {
+                        ingredientsBuilder.append((i + 1) + " " + ingredients[i] + "\n");
+                    }
+                }
+                final String shareIngredients = ingredientsBuilder.toString();
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+                Intent intent = new Intent ();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "List of ingredients:");
+                intent.putExtra(Intent.EXTRA_TEXT, shareIngredients);
+                intent.setType("text/plain");
+                startActivity(
+                        Intent.createChooser(
+                                intent,
+                                getResources().getString(R.string.Ingredients)
+                        )
+                );
             }
         });
     }
