@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -47,8 +48,10 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class DetailsView extends AppCompatActivity {
 
@@ -84,6 +87,11 @@ public class DetailsView extends AppCompatActivity {
             this.getSupportActionBar().hide();
         } catch (NullPointerException e) {
         }
+
+        //Fonts
+        final Typeface main_title = getResources().getFont(R.font.gothamblack);
+        final Typeface sub_sub_title = getResources().getFont(R.font.gothammedium);
+        final Typeface text = getResources().getFont(R.font.montserratrregular);
 
         // Get ID from View
         final String id = getIntent().getStringExtra("id");
@@ -154,8 +162,41 @@ public class DetailsView extends AppCompatActivity {
                                     textView.setText(cocktail_info.glass);
 
                                     // Instructions
+                                    String currentString = cocktail_info.instructions;
+                                    String[] separated = currentString.split("\\. ");
+                                    String final_instructions="";
+
+                                    /*Log.d("hola",separated[0]);
+
+                                    for(int f=0; f<separated.length; f++){
+                                        int index = f+1;
+                                        final_instructions = final_instructions + index + ". " + separated[f] + "\n";
+                                    }
                                     textView = findViewById(R.id.txt_instructions);
-                                    textView.setText(cocktail_info.instructions);
+                                    textView.setText(final_instructions);*/
+
+                                    for(int f=0; f<separated.length; f++){
+
+                                    TextView tv = new TextView(DetailsView.this);
+                                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                    if(f== separated.length-1){
+                                        params.setMargins(DPS(15),DPS(3),DPS(15),DPS(15));
+                                    }else{
+                                        params.setMargins(DPS(15),DPS(3),DPS(15),DPS(5));
+                                    }
+                                    tv.setLayoutParams(params);
+                                    tv.setTextSize(DPS(7));
+                                    tv.setTypeface(text);
+                                    tv.setTextColor(Color.parseColor("#000000"));
+                                    int index = f+1;
+                                    tv.setText(index +". " + separated[f]);
+
+                                    ((LinearLayout) findViewById(R.id.image_layout)).addView(tv);
+
+                                    }
+
+
+
 
                                     String[] imageURLArray = new String[]{
                                             "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient1 + "-Small.png",

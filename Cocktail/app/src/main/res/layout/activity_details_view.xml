@@ -39,7 +39,7 @@
                 android:textStyle="bold"
                 android:typeface="sans"
                 app:autoSizeTextType="uniform"
-                app:fontFamily="@font/open_sans_bold" />
+                app:fontFamily="@font/gothamblack" />
 
             <ToggleButton
                 android:id="@+id/myToggleButton"
@@ -66,8 +66,8 @@
                 android:paddingLeft="15dp"
                 android:text="Ingredients"
                 android:textColor="#212529"
-                android:textSize="20sp"
-                app:fontFamily="@font/open_sans_bold" />
+                android:textSize="25sp"
+                app:fontFamily="@font/gothamblack" />
 
         </RelativeLayout>
 
@@ -196,8 +196,8 @@
             android:paddingTop="15dp"
             android:text="Glass"
             android:textColor="#212529"
-            android:textSize="20sp"
-            app:fontFamily="@font/open_sans_bold" />
+            android:textSize="25dp"
+            app:fontFamily="@font/gothamblack" />
 
         <TextView
             android:id="@+id/txt_glass"
@@ -209,8 +209,8 @@
             android:paddingBottom="10dp"
             android:text="glass"
             android:textColor="#000000"
-            android:textSize="18sp"
-            app:fontFamily="sans-serif" />
+            android:textSize="18dp"
+            app:fontFamily="@font/montserratrregular" />
 
         <TextView
             android:id="@+id/txt_subTitle3"
@@ -221,20 +221,10 @@
             android:paddingTop="10dp"
             android:text="Instructions"
             android:textColor="#212529"
-            android:textSize="20sp"
-            app:fontFamily="@font/open_sans_bold" />
+            android:textSize="25sp"
+            app:fontFamily="@font/gothamblack" />
 
-        <TextView
-            android:id="@+id/txt_instructions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingTop="5dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="10dp"
-            android:text="Stirring gently, pour all ingredients into highball glass. Garnish."
-            android:textColor="#000000"
-            android:textSize="18sp" />
+
 
     </LinearLayout>
 

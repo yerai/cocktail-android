@@ -17,8 +17,9 @@
             android:layout_alignParentLeft="true"
             android:text="@string/ingredient"
             android:textColor="@color/textselector_list"
-            android:textSize="@dimen/ingredient"
-            android:textStyle="bold" />
+            android:textSize="17dp"
+            android:textStyle="bold"
+            android:fontFamily="@font/gothammedium"/>
 
         <TextView
             android:id="@+id/measurement"
@@ -28,6 +29,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
             android:text="@string/measurement"
-            android:textSize="@dimen/measurement" />
+            android:textSize="17dp"
+            android:fontFamily="@font/montserratrregular"/>
     </RelativeLayout>
 </RelativeLayout>
