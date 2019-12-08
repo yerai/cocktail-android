@@ -347,6 +347,7 @@ public class DetailsView extends AppCompatActivity {
                                             if ((t.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0){
                                                 t.setPaintFlags(0);
                                                 t.setTextColor(Color.parseColor("#212529"));
+                                                Toast.makeText(getApplicationContext(),"Added " + t.getText().toString()+" to shopping list",Toast.LENGTH_LONG).show();
                                                 shoppingList.add(t.getText().toString());
                                                 shoppingList2.add(t2.getText().toString());
                                             }else{
@@ -354,6 +355,7 @@ public class DetailsView extends AppCompatActivity {
                                                 t.setTextColor(Color.parseColor("#b0b0b0"));
                                                 for(int j = 0; j<shoppingList.size(); j++){
                                                     if(shoppingList.get(j).equals(t.getText().toString())){
+                                                        Toast.makeText(getApplicationContext(),"Removed " + t.getText().toString() +" from shopping list",Toast.LENGTH_LONG).show();
                                                         shoppingList.remove(j);
                                                         shoppingList2.remove(j);
                                                     }
