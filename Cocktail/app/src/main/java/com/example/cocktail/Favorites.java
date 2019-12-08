@@ -128,6 +128,16 @@ public class Favorites extends AppCompatActivity {
                 }
             });
 
+            final int finalI1 = i;
+            ll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ll.getContext(), DetailsView.class);
+                    intent.putExtra("id", FavoritesCocktailArrayList.get(finalI1).id);
+                    ll.getContext().startActivity(intent);
+                }
+            });
+
 
             cv.addView(iv);
             ll2.addView(iv2);

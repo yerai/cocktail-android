@@ -61,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        //Set favorites and recents
+        addFavorite("11007","Margarita","https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg");
+        addFavorite("12784","Thai Iced Coffee","https://www.thecocktaildb.com/images/media/drink/rqpypv1441245650.jpg");
+        addRecent("11006","Daiquiri","https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg");
+
         //Fonts
         final Typeface main_title = getResources().getFont(R.font.gothamblack);
         final Typeface sub_sub_title = getResources().getFont(R.font.gothammedium);
@@ -231,6 +236,76 @@ public class MainActivity extends AppCompatActivity {
         if(RecentCocktailArrayList == null || RecentCocktailArrayList.size()<1){
             findViewById(R.id.Recent).setVisibility(View.GONE);
             findViewById(R.id.Recent_List).setVisibility(View.GONE);
+        }else{
+
+            findViewById(R.id.Recent).setVisibility(View.VISIBLE);
+            findViewById(R.id.Recent_List).setVisibility(View.VISIBLE);
+
+            ((LinearLayout)findViewById(R.id.Recent_List_Container)).removeAllViews();
+
+            for (int i=0; i<RecentCocktailArrayList.size(); i++){
+
+                /* Linear Layout */
+                final LinearLayout ll = new LinearLayout(this);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                ll.setLayoutParams(params);
+                ll.setOrientation(LinearLayout.VERTICAL);
+
+                /* CardView */
+                CardView cv = new CardView(this);
+                cv.setCardElevation(DPS(0));
+                cv.setRadius(DPS(5));
+                CardView.LayoutParams params1 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(130),DPS(130)));
+                if(i==0){
+                    params1.setMargins(DPS(20),DPS(0),DPS(10),DPS(0));
+                }else if(i== RecentCocktailArrayList.size()-1){
+                    params1.setMargins(DPS(5),DPS(0),DPS(20),DPS(0));
+                }else{
+                    params1.setMargins(DPS(5),DPS(0),DPS(10),DPS(0));
+                }
+                cv.setLayoutParams(params1);
+
+                /* ImageView */
+                ImageView iv = new ImageView(this);
+                iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                params2.weight=1;
+                iv.setLayoutParams(params2);
+                new DownloadImageTask(iv).execute(RecentCocktailArrayList.get(i).image);
+
+                /* TextView */
+                TextView tv = new TextView(this);
+                tv.setText(RecentCocktailArrayList.get(i).name);
+                LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                params3.weight=1;
+                if(i==0){
+                    params3.setMargins(DPS(20), 0, 0, 0);
+                }else {
+                    params3.setMargins(DPS(5), 0, 0, 0);
+                }
+                tv.setLayoutParams(params3);
+                tv.setTextSize(DPS(7));
+                Typeface sub_title = getResources().getFont(R.font.gothammedium);
+                tv.setTypeface(sub_title);
+                tv.setTextColor(Color.parseColor("#323031"));
+
+                /* Add Components */
+                cv.addView(iv);
+                ll.addView(cv);
+                ll.addView(tv);
+                ((LinearLayout)findViewById(R.id.Recent_List_Container)).addView(ll);
+
+                final int finalI = i;
+                ll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(ll.getContext(), DetailsView.class);
+                        intent.putExtra("id", RecentCocktailArrayList.get(finalI).id);
+                        ll.getContext().startActivity(intent);
+                    }
+                });
+            }
+
         }
 
         // Featured Cocktails
