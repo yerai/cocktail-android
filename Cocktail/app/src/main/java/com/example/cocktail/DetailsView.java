@@ -1,32 +1,37 @@
 package com.example.cocktail;
 
+import android.app.ProgressDialog;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.view.Gravity;
+import android.util.SparseBooleanArray;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,40 +48,63 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class DetailsView extends AppCompatActivity {
 
-    public static final String TAG = "ListViewExample";
+    // Log tag
+    public static final String TAG = DetailsView.class.getSimpleName();
 
-    private ListView listView;
+    // Movies json url
+    private ProgressDialog pDialog;
 
     TextView textView;
-    ImageView imageView;
     ToggleButton toggleButton;
-    Spinner spinner;
     Button button;
 
+    ArrayList<HashMap<String, String>> ingredientsList;
+    String[] ingredients;
+    String[] measurements;
+    ArrayList<String> shoppingList = new ArrayList<>();
+    ArrayList<String> shoppingList2 = new ArrayList<>();
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_details_view);
+
+        pDialog = new ProgressDialog(this);
+        // Showing progress dialog before making http request
+        pDialog.setMessage("Loading...");
+        pDialog.show();
 
         // Hide Top Bar
-        try
-        {
+        try {
             this.getSupportActionBar().hide();
+        } catch (NullPointerException e) {
         }
-        catch (NullPointerException e){}
+
+        //Fonts
+        final Typeface main_title = getResources().getFont(R.font.gothamblack);
+        final Typeface sub_sub_title = getResources().getFont(R.font.gothammedium);
+        final Typeface text = getResources().getFont(R.font.montserratrregular);
 
         // Get ID from View
-        String id = getIntent().getStringExtra("id");
+        final String id = getIntent().getStringExtra("id");
+        // Get Data of Cocktail
+        final RequestQueue requestQueue = Volley.newRequestQueue(this);
+        final String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
+
+        toggleButton = findViewById(R.id.myToggleButton);
+        ingredientsList = new ArrayList<>();
+        final ListView ingredientsListview = findViewById(R.id.Ingredients_list);
 
         // Data structure of cocktail
         final cocktail cocktail_info = new cocktail();
-
-        // Get Data of Cocktail
-        final RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, (JSONObject) null, new Response.Listener<JSONObject>() {
@@ -84,13 +112,14 @@ public class DetailsView extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onResponse(JSONObject response) {
+                        hidePDialog();
                         Iterator<?> keys = response.keys();
-                        while(keys.hasNext() ) {
-                            String key = (String)keys.next();
+                        while (keys.hasNext()) {
+                            String key = (String) keys.next();
                             try {
                                 JSONArray drinks = new JSONArray(response.get(key).toString());
 
-                                for(int i=0; i<drinks.length(); i++){
+                                for (int i = 0; i < drinks.length(); i++) {
                                     final JSONObject drink = drinks.getJSONObject(i);
 
                                     cocktail_info.name = drink.getString("strDrink");
@@ -98,7 +127,23 @@ public class DetailsView extends AppCompatActivity {
                                     cocktail_info.glass = drink.getString("strGlass");
                                     cocktail_info.instructions = drink.getString("strInstructions");
                                     cocktail_info.ingredient1 = drink.getString("strIngredient1");
+                                    cocktail_info.ingredient2 = drink.getString("strIngredient2");
+                                    cocktail_info.ingredient3 = drink.getString("strIngredient3");
+                                    cocktail_info.ingredient4 = drink.getString("strIngredient4");
+                                    cocktail_info.ingredient5 = drink.getString("strIngredient5");
+                                    cocktail_info.ingredient6 = drink.getString("strIngredient6");
+                                    cocktail_info.ingredient7 = drink.getString("strIngredient7");
+                                    cocktail_info.ingredient8 = drink.getString("strIngredient8");
                                     cocktail_info.measure1 = drink.getString("strMeasure1");
+                                    cocktail_info.measure2 = drink.getString("strMeasure2");
+                                    cocktail_info.measure3 = drink.getString("strMeasure3");
+                                    cocktail_info.measure4 = drink.getString("strMeasure4");
+                                    cocktail_info.measure5 = drink.getString("strMeasure5");
+                                    cocktail_info.measure6 = drink.getString("strMeasure6");
+                                    cocktail_info.measure7 = drink.getString("strMeasure7");
+                                    cocktail_info.measure8 = drink.getString("strMeasure8");
+
+                                    Log.d("Hello",cocktail_info.ingredient3);
 
                                     // Set View
                                     // Title
@@ -106,17 +151,304 @@ public class DetailsView extends AppCompatActivity {
                                     textView.setText(cocktail_info.name);
 
                                     // Image
-                                    ImageView iv = (ImageView) findViewById(R.id.img_cocktail_details);
+                                    ImageView iv = findViewById(R.id.img_cocktail_details);
                                     iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                     LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, iv.getWidth()));
                                     iv.setLayoutParams(params4);
-                                    new DetailsView.DownloadImageTask(iv).execute(cocktail_info.image);
+                                    new DownloadImageTask(iv).execute(cocktail_info.image);
 
+                                    // Glass text
+                                    textView = findViewById(R.id.txt_glass);
+                                    textView.setText(cocktail_info.glass);
+
+                                    // Instructions
+                                    String currentString = cocktail_info.instructions;
+                                    String[] separated = currentString.split("\\. ");
+                                    String final_instructions="";
+
+                                    /*Log.d("hola",separated[0]);
+
+                                    for(int f=0; f<separated.length; f++){
+                                        int index = f+1;
+                                        final_instructions = final_instructions + index + ". " + separated[f] + "\n";
+                                    }
+                                    textView = findViewById(R.id.txt_instructions);
+                                    textView.setText(final_instructions);*/
+
+                                    for(int f=0; f<separated.length; f++){
+
+                                    TextView tv = new TextView(DetailsView.this);
+                                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                    if(f== separated.length-1){
+                                        params.setMargins(DPS(15),DPS(3),DPS(15),DPS(15));
+                                    }else{
+                                        params.setMargins(DPS(15),DPS(3),DPS(15),DPS(5));
+                                    }
+                                    tv.setLayoutParams(params);
+                                    tv.setTextSize(DPS(7));
+                                    tv.setTypeface(text);
+                                    tv.setTextColor(Color.parseColor("#000000"));
+                                    int index = f+1;
+                                    tv.setText(index +". " + separated[f]);
+
+                                    ((LinearLayout) findViewById(R.id.image_layout)).addView(tv);
+
+                                    }
+
+
+
+
+                                    String[] imageURLArray = new String[]{
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient1 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient2 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient3 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient4 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient5 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient6 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient7 + "-Small.png",
+                                            "https://www.thecocktaildb.com/images/ingredients/" + cocktail_info.ingredient8 + "-Small.png"
+                                    };
+
+                                    ImageView imgIngredient1 = findViewById(R.id.img_ingredient1);
+                                    ImageView imgIngredient2 = findViewById(R.id.img_ingredient2);
+                                    ImageView imgIngredient3 = findViewById(R.id.img_ingredient3);
+                                    ImageView imgIngredient4 = findViewById(R.id.img_ingredient4);
+                                    ImageView imgIngredient5 = findViewById(R.id.img_ingredient5);
+                                    ImageView imgIngredient6 = findViewById(R.id.img_ingredient6);
+                                    ImageView imgIngredient7 = findViewById(R.id.img_ingredient7);
+                                    ImageView imgIngredient8 = findViewById(R.id.img_ingredient8);
+
+                                    ingredients = new String[8];
+
+                                    if (cocktail_info.ingredient1.equals("null") || cocktail_info.ingredient1.equals("")) {
+                                        imgIngredient1.setVisibility(View.GONE);
+                                        ingredients[0] = "null";
+                                    } else {
+                                        Log.d("TEST",cocktail_info.ingredient1);
+                                        ingredients[0] = cocktail_info.ingredient1;
+                                        shoppingList.add(cocktail_info.ingredient1);
+                                        new DownloadImageTask(imgIngredient1).execute(imageURLArray[0]);
+                                    }
+                                    if (cocktail_info.ingredient2.equals("null" ) || cocktail_info.ingredient2.equals("")) {
+                                        imgIngredient2.setVisibility(View.GONE);
+                                        ingredients[1] = "null";
+                                    } else {
+                                        ingredients[1] = cocktail_info.ingredient2;
+                                        shoppingList.add(cocktail_info.ingredient2);
+                                        new DownloadImageTask(imgIngredient2).execute(imageURLArray[1]);
+                                    }
+                                    if (cocktail_info.ingredient3.equals("null") || cocktail_info.ingredient3.equals("")) {
+                                        Log.d("Hello","1");
+                                        imgIngredient3.setVisibility(View.GONE);
+                                        ingredients[2] = "null";
+                                    } else {
+                                        Log.d("Hello","2");
+                                        ingredients[2] = cocktail_info.ingredient3;
+                                        shoppingList.add(cocktail_info.ingredient3);
+                                        new DownloadImageTask(imgIngredient3).execute(imageURLArray[2]);
+                                    }
+                                    if (cocktail_info.ingredient4.equals("null") || cocktail_info.ingredient4.equals("")) {
+                                        imgIngredient4.setVisibility(View.GONE);
+                                        ingredients[3] = "null";
+                                    } else {
+                                        ingredients[3] = cocktail_info.ingredient4;
+                                        shoppingList.add(cocktail_info.ingredient4);
+                                        new DownloadImageTask(imgIngredient4).execute(imageURLArray[3]);
+                                    }
+                                    if (cocktail_info.ingredient5.equals("null") || cocktail_info.ingredient5.equals("")) {
+                                        imgIngredient5.setVisibility(View.GONE);
+                                        ingredients[4] = "null";
+                                    } else {
+                                        ingredients[4] = cocktail_info.ingredient5;
+                                        shoppingList.add(cocktail_info.ingredient5);
+                                        new DownloadImageTask(imgIngredient5).execute(imageURLArray[4]);
+                                    }
+                                    if (cocktail_info.ingredient6.equals("null") || cocktail_info.ingredient6.equals("")) {
+                                        imgIngredient6.setVisibility(View.GONE);
+                                        ingredients[5] = "null";
+                                    } else {
+                                        ingredients[5] = cocktail_info.ingredient6;
+                                        shoppingList.add(cocktail_info.ingredient6);
+                                        new DownloadImageTask(imgIngredient6).execute(imageURLArray[5]);
+                                    }
+                                    if (cocktail_info.ingredient7.equals("null") || cocktail_info.ingredient7.equals("")) {
+                                        imgIngredient7.setVisibility(View.GONE);
+                                        ingredients[6] = "null";
+                                    } else {
+                                        ingredients[6] = cocktail_info.ingredient7;
+                                        shoppingList.add(cocktail_info.ingredient7);
+                                        new DownloadImageTask(imgIngredient7).execute(imageURLArray[6]);
+                                    }
+                                    if (cocktail_info.ingredient8.equals("null") || cocktail_info.ingredient8.equals("")) {
+                                        ingredients[7] = "null";
+                                        imgIngredient8.setVisibility(View.GONE);
+                                    } else {
+                                        ingredients[7] = cocktail_info.ingredient8;
+                                        shoppingList.add(cocktail_info.ingredient8);
+                                        new DownloadImageTask(imgIngredient8).execute(imageURLArray[7]);
+                                    }
+
+                                    measurements = new String[8];
+
+                                    if (cocktail_info.measure1.equals("null") || cocktail_info.measure1.equals("")) {
+                                        measurements[0] = "null";
+                                        if(ingredients[0].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[0] = cocktail_info.measure1;
+                                        shoppingList2.add(cocktail_info.measure1);
+                                    }
+                                    if (cocktail_info.measure2.equals("null") || cocktail_info.measure2.equals("")) {
+                                        measurements[1] = "null";
+                                        if(ingredients[1].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[1] = cocktail_info.measure2;
+                                        shoppingList2.add(cocktail_info.measure2);
+                                    }
+                                    if (cocktail_info.measure3.equals("null") || cocktail_info.measure3.equals("")) {
+                                        measurements[2] = "null";
+                                        if(ingredients[2].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[2] = cocktail_info.measure3;
+                                        shoppingList2.add(cocktail_info.measure3);
+                                    }
+                                    if (cocktail_info.measure4.equals("null") || cocktail_info.measure4.equals("")) {
+                                        measurements[3] = "null";
+                                        if(ingredients[3].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[3] = cocktail_info.measure4;
+                                        shoppingList2.add(cocktail_info.measure4);
+                                    }
+                                    if (cocktail_info.measure5.equals("null") || cocktail_info.measure5.equals("")) {
+                                        measurements[4] = "null";
+                                        if(ingredients[4].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[4] = cocktail_info.measure5;
+                                        shoppingList2.add(cocktail_info.measure5);
+                                    }
+                                    if (cocktail_info.measure6.equals("null") || cocktail_info.measure6.equals("")) {
+                                        measurements[5] = "null";
+                                        if(ingredients[5].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[5] = cocktail_info.measure6;
+                                        shoppingList2.add(cocktail_info.measure6);
+                                    }
+                                    if (cocktail_info.measure7.equals("null") || cocktail_info.measure7.equals("")) {
+                                        measurements[6] = "null";
+                                        if(ingredients[6].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[6] = cocktail_info.measure7;
+                                        shoppingList2.add(cocktail_info.measure7);
+                                    }
+                                    if (cocktail_info.measure8.equals("null") || cocktail_info.measure8.equals("")) {
+                                        measurements[7] = "null";
+                                        if(ingredients[7].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
+                                    } else {
+                                        measurements[7] = cocktail_info.measure8;
+                                        shoppingList2.add(cocktail_info.measure8);
+                                    }
+
+
+                                    for (int j = 0; j < ingredients.length; j++) {
+                                        if (ingredients[j] == "null") {
+                                        } else {
+                                            HashMap<String, String> hm = new HashMap<>();
+                                            hm.put("Ingredients", ingredients[j]);
+                                            if(measurements[j]=="null"){
+                                                hm.put("Measurements", "To your liking");
+                                            }else{
+                                                hm.put("Measurements", measurements[j]);
+                                            }
+                                            ingredientsList.add(hm);
+                                        }
+                                    }
+
+                                    String[] from = {"Ingredients", "Measurements"};
+                                    int[] to = {R.id.ingredient, R.id.measurement};
+
+                                    SimpleAdapter simpleAdapter = new SimpleAdapter(getBaseContext(), ingredientsList, R.layout.list_item, from, to);
+                                    ingredientsListview.setAdapter(simpleAdapter);
+
+
+                                    //perform listView item click event
+                                    ingredientsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                            View v = getViewByPosition(i,ingredientsListview);
+                                            TextView t = v.findViewById(R.id.ingredient);
+                                            TextView t2 = v.findViewById(R.id.measurement);
+                                            if ((t.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0){
+                                                t.setPaintFlags(0);
+                                                t.setTextColor(Color.parseColor("#212529"));
+                                                Toast.makeText(getApplicationContext(),"Added " + t.getText().toString()+" to shopping list",Toast.LENGTH_LONG).show();
+                                                shoppingList.add(t.getText().toString());
+                                                shoppingList2.add(t2.getText().toString());
+                                            }else{
+                                                t.setPaintFlags(t.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                                                t.setTextColor(Color.parseColor("#b0b0b0"));
+                                                for(int j = 0; j<shoppingList.size(); j++){
+                                                    if(shoppingList.get(j).equals(t.getText().toString())){
+                                                        Toast.makeText(getApplicationContext(),"Removed " + t.getText().toString() +" from shopping list",Toast.LENGTH_LONG).show();
+                                                        shoppingList.remove(j);
+                                                        shoppingList2.remove(j);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    setListViewHeightBasedOnChildren(ingredientsListview);
                                 }
-                            } catch (JSONException e) {
+                            } catch (final JSONException e) {
                                 e.printStackTrace();
+                                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                                hidePDialog();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Json parsing error: " + e.getMessage(),
+                                                Toast.LENGTH_LONG)
+                                                .show();
+                                    }
+                                });
                             }
                         }
+
+                        //Favourite toggle button
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if (MainActivity.checkFavorite(id) == true) {
+                                toggleButton.setChecked(true);
+                                toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
+                            } else {
+                                toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
+                                toggleButton.setChecked(false);
+                            }
+                        }
+
+                        //toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
+                        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                if (isChecked) {
+                                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
+                                    MainActivity.addFavorite(id, cocktail_info.name, cocktail_info.image);
+                                } else {
+                                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
+                                    MainActivity.removeFavoriteByID(id);
+                                }
+                            }
+                        });
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -129,115 +461,50 @@ public class DetailsView extends AppCompatActivity {
         // add it to the RequestQueue
         requestQueue.add(jsonObjectRequest);
 
-        setContentView(R.layout.activity_details_view);
-
-        spinner = findViewById(R.id.servings_spinner);
-        toggleButton = findViewById(R.id.myToggleButton);
-        listView = findViewById(R.id.Cocktails_Ingredients_list);
         button = findViewById(R.id.btn_share);
 
-        toggleButton.setChecked(false);
-        toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
-        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_fill));
-                else
-                    toggleButton.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.heart_border));
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                final StringBuilder ingredientsBuilder = new StringBuilder();
+                for(int i = 0; i < shoppingList.size(); i++){
+                    ingredientsBuilder.append(shoppingList2.get(i) + " of " + shoppingList.get(i) + "\n");
+                }
+
+                final String shareIngredients = ingredientsBuilder.toString();
+
+                Intent intent = new Intent ();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "List of ingredients:");
+                intent.putExtra(Intent.EXTRA_TEXT, shareIngredients);
+                intent.setType("text/plain");
+                startActivity(
+                        Intent.createChooser(
+                                intent,
+                                getResources().getString(R.string.Ingredients)
+                        )
+                );
             }
         });
+    }
 
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("1");
-        arrayList.add("2");
-        arrayList.add("3");
-        arrayList.add("4");
-        arrayList.add("5");
-        arrayList.add("6");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, arrayList);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(arrayAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        hidePDialog();
+    }
 
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String tutorialsName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(parent.getContext(), "Selected: " + tutorialsName,          Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onNothingSelected(AdapterView <?> parent) {
-            }
-        });
-
-
-
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(TAG, "onItemClick: " +position);
-                CheckedTextView v = (CheckedTextView) view;
-                boolean currentCheck = v.isChecked();
-                UserAccount user = (UserAccount)listView.getItemAtPosition(position);
-                user.setActive(!currentCheck);
-            }
-        });
-        UserAccount vodka = new UserAccount("vodka","1/2 oz", false);
-        UserAccount lemon = new UserAccount("Lemon juice","1 dash", false);
-        UserAccount tomato = new UserAccount("Tomato juice","2 dash", false);
-        UserAccount worcestershire = new UserAccount(" Worcestershire Sauce","1/2 tsp", false);
-        UserAccount lime = new UserAccount("Lime","1 wedge", false);
-        UserAccount tobasco = new UserAccount("Tobasco sauce","2 drops", false);
-
-        UserAccount[] users = new UserAccount[]{vodka,lemon, tomato, worcestershire, lime, tobasco};
-
-        ArrayAdapter<UserAccount> arrayAdapter2
-                = new ArrayAdapter<UserAccount>(this, android.R.layout.simple_list_item_multiple_choice , users);
-
-
-        listView.setAdapter(arrayAdapter2);
-
-        for(int i=0;i< users.length; i++ )  {
-            listView.setItemChecked(i,users[i].isActive());
+    private void hidePDialog() {
+        if (pDialog != null) {
+            pDialog.dismiss();
+            pDialog = null;
         }
     }
-
-    public void printSelectedItems(View view)  {
-
-        SparseBooleanArray sp = listView.getCheckedItemPositions();
-
-        StringBuilder sb= new StringBuilder();
-
-        for(int i=0;i<sp.size();i++){
-            if(sp.valueAt(i)==true){
-                UserAccount user= (UserAccount) listView.getItemAtPosition(i);
-                // Or:
-                // String s = ((CheckedTextView) listView.getChildAt(i)).getText().toString();
-                String s= user.getUserName();
-                sb = sb.append(" "+s);
-            }
-        }
-        Toast.makeText(this, "Selected items are: "+sb.toString(), Toast.LENGTH_LONG).show();
-
-    }
-
-    public void myClickHandler(View target) {
-        printSelectedItems(listView);
-    }
-
 
     // Function to download IMG from URL
     static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
-
-        /*new DownloadImageTask((ImageView) findViewById(R.id.img_recent1))
-                    .execute(cocktailArrayList.get(0).image);
-            ((TextView)findViewById(R.id.text_recent1)).setText(cocktailArrayList.get(0).name);*/
-
-        public DownloadImageTask(ImageView bmImage) {
+        private DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 
@@ -256,6 +523,44 @@ public class DetailsView extends AppCompatActivity {
 
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
+        }
+    }
+
+    // DPS to Pixels Function
+    private int DPS(int dps) {
+        final float scale = this.getResources().getDisplayMetrics().density;
+        return (int) (dps * scale + 0.5f);
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
+
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
         }
     }
 }
