@@ -61,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        //Set favorites and recents
+        /*
         addFavorite("11007","Margarita","https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg");
         addFavorite("12784","Thai Iced Coffee","https://www.thecocktaildb.com/images/media/drink/rqpypv1441245650.jpg");
         addRecent("11006","Daiquiri","https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg");
-
+        */
         //Fonts
         final Typeface main_title = getResources().getFont(R.font.gothamblack);
         final Typeface sub_sub_title = getResources().getFont(R.font.gothammedium);
