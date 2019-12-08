@@ -40,21 +40,18 @@ public class collection extends AppCompatActivity {
         setContentView(R.layout.activity_collection);
 
         //Fonts
-        Typeface title = getResources().getFont(R.font.fredoka);
-        Typeface title2 = getResources().getFont(R.font.latobold);
-        Typeface title3 = getResources().getFont(R.font.latoblack);
-        Typeface text = getResources().getFont(R.font.montserratrregular);
+        final Typeface main_title = getResources().getFont(R.font.gothamblack);
+        final Typeface sub_sub_title = getResources().getFont(R.font.gothammedium);
+
 
 
         // Get Title & Photo
         String collectionName = getIntent().getStringExtra("title");
-        String collectionPicture = getIntent().getStringExtra("photo");
 
         if(collectionName.equals("Top 10")){
             FeaturedCocktailArrayList.add(new cocktail("11000","Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("11001","Old Fashioned", "https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("11002","Long Island Tea","https://www.thecocktaildb.com/images/media/drink/ywxwqs1439906072.jpg"));
-            FeaturedCocktailArrayList.add(new cocktail("11003","Negroni","https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("11004","Whiskey Sour","https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("11005","Dry Martini","https://www.thecocktaildb.com/images/media/drink/71t8581504353095.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("11006","Daiquiri","https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
@@ -69,7 +66,15 @@ public class collection extends AppCompatActivity {
             FeaturedCocktailArrayList.add(new cocktail("17220","Butter Baby","https://www.thecocktaildb.com/images/media/drink/1xhjk91504783763.jpg"));
             FeaturedCocktailArrayList.add(new cocktail("15254","Zenmeister","https://www.thecocktaildb.com/images/media/drink/qyuvsu1479209462.jpg"));
         }else{
-
+            FeaturedCocktailArrayList.add(new cocktail("11000","Mojito", "https://www.thecocktaildb.com/images/media/drink/rxtqps1478251029.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11001","Old Fashioned", "https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11002","Long Island Tea","https://www.thecocktaildb.com/images/media/drink/ywxwqs1439906072.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11004","Whiskey Sour","https://www.thecocktaildb.com/images/media/drink/o56h041504352725.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11005","Dry Martini","https://www.thecocktaildb.com/images/media/drink/71t8581504353095.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11006","Daiquiri","https://www.thecocktaildb.com/images/media/drink/usuuur1439906797.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11007","Margarita","https://www.thecocktaildb.com/images/media/drink/wpxpvu1439905379.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11008","Manhattan","https://www.thecocktaildb.com/images/media/drink/ec2jtz1504350429.jpg"));
+            FeaturedCocktailArrayList.add(new cocktail("11009","Moscow Mule","https://www.thecocktaildb.com/images/media/drink/3pylqc1504370988.jpg"));
         }
 
         /* CardView */
@@ -84,7 +89,13 @@ public class collection extends AppCompatActivity {
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         iv.setLayoutParams(params2);
-        new MainActivity.DownloadImageTask(iv).execute(collectionPicture);
+        if(collectionName.equals("Top 10")){
+            iv.setImageDrawable(getResources().getDrawable(R.drawable.top));
+        }else if (collectionName.equals("Christmas Collection")){
+            iv.setImageDrawable(getResources().getDrawable(R.drawable.xmas));
+        }else{
+            iv.setImageDrawable(getResources().getDrawable(R.drawable.sad));
+        }
         /* Black Background */
         TextView tv = new TextView(this);
         tv.setLayoutParams(params2);
@@ -95,7 +106,7 @@ public class collection extends AppCompatActivity {
         tv1.setText(collectionName);
         tv1.setLayoutParams(params2);
         tv1.setTextSize(DPS(15));
-        tv1.setTypeface(title);
+        tv1.setTypeface(main_title);
         tv1.setTextColor(Color.parseColor("#ffffff"));
         tv1.setGravity(Gravity.CENTER);
         /* Add components */
@@ -125,7 +136,7 @@ public class collection extends AppCompatActivity {
             iv1.setScaleType(ImageView.ScaleType.CENTER_CROP);
             LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
             iv1.setLayoutParams(params4);
-            new MainActivity.DownloadImageTask(iv1).execute(FeaturedCocktailArrayList.get(i).image);
+            new MainActivity.DownloadImageTask(iv1).execute(FeaturedCocktailArrayList.get(i).image + "/preview");
 
             /* TextView */
             TextView tv2 = new TextView(this);
@@ -134,8 +145,8 @@ public class collection extends AppCompatActivity {
             params5.weight=1;
             params5.setMargins(DPS(20), 0, 0, DPS(15));
             tv2.setLayoutParams(params5);
-            tv2.setTextSize(DPS(7));
-            tv2.setTypeface(title2);
+            tv2.setTextSize(DPS(8));
+            tv2.setTypeface(sub_sub_title);
             tv2.setGravity(Gravity.CENTER_VERTICAL);
             tv2.setTextColor(Color.parseColor("#323031"));
 

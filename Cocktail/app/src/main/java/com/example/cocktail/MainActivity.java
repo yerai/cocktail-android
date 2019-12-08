@@ -42,7 +42,6 @@ import java.util.Iterator;
 public class MainActivity extends AppCompatActivity {
 
     private static ArrayList<cocktail> RecentCocktailArrayList = new ArrayList<cocktail>();
-    private ArrayList<featured> FeaturedArrayList = new ArrayList<featured>();
     private static ArrayList<cocktail> FavoritesCocktailArrayList = new ArrayList<cocktail>();
 
     final MainActivity context = this;
@@ -63,23 +62,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Fonts
-        Typeface title = getResources().getFont(R.font.fredoka);
-        final Typeface title2 = getResources().getFont(R.font.latobold);
-        Typeface title3 = getResources().getFont(R.font.latoblack);
-        Typeface text = getResources().getFont(R.font.montserratrregular);
-
-        // Add Featured Cocktails
-        FeaturedArrayList.add(new featured("Top 10", "https://github.com/yerai/cocktail/blob/master/img/featured-1.jpg?raw=true", "Our top selection of Cocktails!"));
-        FeaturedArrayList.add(new featured("Christmas Collection", "https://github.com/yerai/cocktail/blob/master/img/featured-2.jpg?raw=true", "Best selection to greet Santa."));
+        final Typeface main_title = getResources().getFont(R.font.gothamblack);
+        final Typeface sub_sub_title = getResources().getFont(R.font.gothammedium);
+        final Typeface text = getResources().getFont(R.font.montserratrregular);
 
         // Set titles
-        ((TextView)findViewById(R.id.Title)).setTypeface(title);
+        ((TextView)findViewById(R.id.Title)).setTypeface(main_title);
         ((TextView)findViewById(R.id.Title)).setTextColor(Color.parseColor("#343035"));
-        ((TextView)findViewById(R.id.Recent)).setTypeface(title);
+        ((TextView)findViewById(R.id.Recent)).setTypeface(main_title);
         ((TextView)findViewById(R.id.Recent)).setTextColor(Color.parseColor("#343035"));
-        ((TextView)findViewById(R.id.Featured)).setTypeface(title);
+        ((TextView)findViewById(R.id.Featured)).setTypeface(main_title);
         ((TextView)findViewById(R.id.Featured)).setTextColor(Color.parseColor("#343035"));
-        ((TextView)findViewById(R.id.Categories)).setTypeface(title);
+        ((TextView)findViewById(R.id.Categories)).setTypeface(main_title);
         ((TextView)findViewById(R.id.Categories)).setTextColor(Color.parseColor("#343035"));
 
         // Navigation bar
@@ -109,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         sv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("hello", "click");
                 sv.onActionViewExpanded();
 
             }
@@ -123,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("hello", "one");
                 callSearch(query);
                 return false;
             }
@@ -131,12 +123,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if(!newText.isEmpty()){
-                    Log.d("hello", "two");
                     callSearch(newText);
                 }else{
-                    Log.d("hello", "three");
                     ((LinearLayout)findViewById(R.id.Search_Results)).removeAllViews();
-                    Log.d("hello", "four");
                 }
                 return false;
             }
@@ -157,7 +146,8 @@ public class MainActivity extends AppCompatActivity {
                                         JSONArray drinks = new JSONArray(response.get(key).toString());
                                         ((LinearLayout)findViewById(R.id.Search_Results)).removeAllViews();
 
-                                        for(int i=0; i<drinks.length(); i++){
+                                        for(int i=0; i<drinks.length() && i<5; i++){
+
                                             final JSONObject drink = drinks.getJSONObject(i);
 
                                             final LinearLayout ll = new LinearLayout(context);
@@ -169,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                                             CardView cv1 = new CardView(context);
                                             cv1.setCardElevation(DPS(0));
                                             cv1.setRadius(DPS(5));
-                                            CardView.LayoutParams params3 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(90),DPS(90)));
+                                            CardView.LayoutParams params3 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(70),DPS(70)));
                                             params3.setMargins(DPS(0),DPS(0),DPS(0),DPS(15));
                                             cv1.setLayoutParams(params3);
 
@@ -178,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                                             iv1.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                             LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
                                             iv1.setLayoutParams(params4);
-                                            new MainActivity.DownloadImageTask(iv1).execute(drink.getString("strDrinkThumb"));
+                                            new MainActivity.DownloadImageTask(iv1).execute(drink.getString("strDrinkThumb")+"/preview");
 
                                             /* TextView */
                                             TextView tv2 = new TextView(context);
@@ -188,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                                             params5.setMargins(DPS(20), 0, 0, DPS(15));
                                             tv2.setLayoutParams(params5);
                                             tv2.setTextSize(DPS(6));
-                                            tv2.setTypeface(title2);
+                                            tv2.setTypeface(sub_sub_title);
                                             tv2.setGravity(Gravity.CENTER_VERTICAL);
                                             tv2.setTextColor(Color.parseColor("#323031"));
 
@@ -202,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                                                 public void onClick(View view) {
 
                                                     try {
-                                                        RecentCocktailArrayList.add(0,new cocktail( drink.getString("idDrink"),drink.getString("strDrink"), drink.getString("strDrinkThumb")));
+                                                        RecentCocktailArrayList.add(0,new cocktail(drink.getString("idDrink"),drink.getString("strDrink"), drink.getString("strDrinkThumb")));
                                                     } catch (JSONException e) {
                                                         e.printStackTrace();
                                                     }
@@ -241,79 +231,20 @@ public class MainActivity extends AppCompatActivity {
         if(RecentCocktailArrayList == null || RecentCocktailArrayList.size()<1){
             findViewById(R.id.Recent).setVisibility(View.GONE);
             findViewById(R.id.Recent_List).setVisibility(View.GONE);
-        }else{
-
-            findViewById(R.id.Recent).setVisibility(View.VISIBLE);
-            findViewById(R.id.Recent_List).setVisibility(View.VISIBLE);
-
-            for (int i=0; i<RecentCocktailArrayList.size(); i++){
-
-                /* Linear Layout */
-                final LinearLayout ll = new LinearLayout(this);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                ll.setLayoutParams(params);
-                ll.setOrientation(LinearLayout.VERTICAL);
-
-                /* CardView */
-                CardView cv = new CardView(this);
-                cv.setCardElevation(DPS(0));
-                cv.setRadius(DPS(5));
-                CardView.LayoutParams params1 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(130),DPS(130)));
-                if(i==0){
-                    params1.setMargins(DPS(20),DPS(0),DPS(10),DPS(0));
-                }else if(i== RecentCocktailArrayList.size()-1){
-                    params1.setMargins(DPS(5),DPS(0),DPS(20),DPS(0));
-                }else{
-                    params1.setMargins(DPS(5),DPS(0),DPS(10),DPS(0));
-                }
-                cv.setLayoutParams(params1);
-
-                /* ImageView */
-                ImageView iv = new ImageView(this);
-                iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                params2.weight=1;
-                iv.setLayoutParams(params2);
-                new DownloadImageTask(iv).execute(RecentCocktailArrayList.get(i).image);
-
-                /* TextView */
-                TextView tv = new TextView(this);
-                tv.setText(RecentCocktailArrayList.get(i).name);
-                LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                params3.weight=1;
-                if(i==0){
-                    params3.setMargins(DPS(20), 0, 0, 0);
-                }else {
-                    params3.setMargins(DPS(5), 0, 0, 0);
-                }
-                tv.setLayoutParams(params3);
-                tv.setTextSize(DPS(5));
-                tv.setTypeface(title2);
-                tv.setTextColor(Color.parseColor("#323031"));
-
-                /* Add Components */
-                cv.addView(iv);
-                ll.addView(cv);
-                ll.addView(tv);
-                ((LinearLayout)findViewById(R.id.Recent_List_Container)).addView(ll);
-
-                final int finalI = i;
-                ll.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(ll.getContext(), DetailsView.class);
-                        intent.putExtra("id", RecentCocktailArrayList.get(finalI).id);
-                        ll.getContext().startActivity(intent);
-                    }
-                });
-            }
-
-
-
         }
 
         // Featured Cocktails
-        for (int i=0; i<FeaturedArrayList.size(); i++){
+        for (int i=0; i<2; i++){
+
+            final String name;
+            String description;
+            if (i==0){
+               name = "Top 10";
+                description = "Our top selection of cocktails!";
+            }else{
+                name ="Christmas Collection";
+                description = "Best selection to greet Santa.";
+            }
 
             /* Linear Layout */
             LinearLayout ll = new LinearLayout(this);
@@ -328,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             CardView.LayoutParams params1 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(300),DPS(130)));
             if(i==0){
                 params1.setMargins(DPS(20),DPS(0),DPS(10),DPS(0));
-            }else if(i== FeaturedArrayList.size()-1){
+            }else if(i==1){
                 params1.setMargins(DPS(5),DPS(0),DPS(20),DPS(0));
             }else{
                 params1.setMargins(DPS(5),DPS(0),DPS(10),DPS(0));
@@ -341,11 +272,15 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
             params2.weight=1;
             iv.setLayoutParams(params2);
-            new DownloadImageTask(iv).execute(FeaturedArrayList.get(i).image);
+            if(i==0){
+                iv.setImageDrawable(getResources().getDrawable(R.drawable.top));
+            }else {
+                iv.setImageDrawable(getResources().getDrawable(R.drawable.xmas));
+            }
 
             /* TextView */
             TextView tv = new TextView(this);
-            tv.setText(FeaturedArrayList.get(i).name);
+            tv.setText(name);
             LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             params3.weight=1;
             if(i==0){
@@ -354,15 +289,15 @@ public class MainActivity extends AppCompatActivity {
                 params3.setMargins(DPS(5), 0, 0, 0);
             }
             tv.setLayoutParams(params3);
-            tv.setTextSize(DPS(5));
-            tv.setTypeface(title2);
+            tv.setTextSize(DPS(7));
+            tv.setTypeface(sub_sub_title);
             tv.setTextColor(Color.parseColor("#323031"));
 
             /* TextView */
             TextView tv2 = new TextView(this);
-            tv2.setText(FeaturedArrayList.get(i).description);
+            tv2.setText(description);
             tv2.setLayoutParams(params3);
-            tv2.setTextSize(DPS(4));
+            tv2.setTextSize(DPS(5));
             tv2.setTypeface(text);
             tv2.setTextColor(Color.parseColor("#323031"));
 
@@ -372,8 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(cv.getContext(), collection.class);
-                    intent.putExtra("title", FeaturedArrayList.get(finali).name);
-                    intent.putExtra("photo", FeaturedArrayList.get(finali).image);
+                    intent.putExtra("title", name);
                     cv.getContext().startActivity(intent);
                 }
             });
@@ -384,8 +318,6 @@ public class MainActivity extends AppCompatActivity {
             ll.addView(tv);
             ll.addView(tv2);
             ((LinearLayout)findViewById(R.id.Featured_List_Container)).addView(ll);
-
-
 
         }
 
@@ -403,8 +335,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         params2.weight=1;
         iv.setLayoutParams(params2);
-        iv.setImageDrawable(getResources().getDrawable(R.drawable.mooods));
-        //new DownloadImageTask(iv).execute("https://cdn.dribbble.com/users/216803/screenshots/1465689/moods.png");
+        iv.setImageDrawable(getResources().getDrawable(R.drawable.mood));
         /* Black Background */
         TextView tv2 = new TextView(this);
         tv2.setLayoutParams(params2);
@@ -414,8 +345,8 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = new TextView(this);
         tv.setText("Mood");
         tv.setLayoutParams(params2);
-        tv.setTextSize(DPS(7));
-        tv.setTypeface(title3);
+        tv.setTextSize(DPS(9));
+        tv.setTypeface(main_title);
         tv.setTextColor(Color.parseColor("#ffffff"));
         tv.setGravity(Gravity.CENTER);
         /* Add components */
@@ -457,8 +388,8 @@ public class MainActivity extends AppCompatActivity {
         TextView tv3 = new TextView(this);
         tv3.setText("Alcohol");
         tv3.setLayoutParams(params2);
-        tv3.setTextSize(DPS(7));
-        tv3.setTypeface(title3);
+        tv3.setTextSize(DPS(9));
+        tv3.setTypeface(main_title);
         tv3.setTextColor(Color.parseColor("#ffffff"));
         tv3.setGravity(Gravity.CENTER);
         /* Add components */
@@ -489,8 +420,8 @@ public class MainActivity extends AppCompatActivity {
         TextView tv5 = new TextView(this);
         tv5.setText("Ingredients");
         tv5.setLayoutParams(params2);
-        tv5.setTextSize(DPS(7));
-        tv5.setTypeface(title3);
+        tv5.setTextSize(DPS(9));
+        tv5.setTypeface(main_title);
         tv5.setTextColor(Color.parseColor("#ffffff"));
         tv5.setGravity(Gravity.CENTER);
         /* Add components */
@@ -520,8 +451,8 @@ public class MainActivity extends AppCompatActivity {
         TextView tv7 = new TextView(this);
         tv7.setText("Country");
         tv7.setLayoutParams(params2);
-        tv7.setTextSize(DPS(7));
-        tv7.setTypeface(title3);
+        tv7.setTextSize(DPS(9));
+        tv7.setTypeface(main_title);
         tv7.setTextColor(Color.parseColor("#ffffff"));
         tv7.setGravity(Gravity.CENTER);
         /* Add components */
@@ -529,8 +460,6 @@ public class MainActivity extends AppCompatActivity {
         cv4.addView(tv8);
         cv4.addView(tv7);
         ((LinearLayout)findViewById(R.id.Categories2)).addView(cv4);
-
-
     }
 
     @Override
@@ -589,9 +518,9 @@ public class MainActivity extends AppCompatActivity {
                     params3.setMargins(DPS(5), 0, 0, 0);
                 }
                 tv.setLayoutParams(params3);
-                tv.setTextSize(DPS(5));
-                Typeface title2 = getResources().getFont(R.font.latobold);
-                tv.setTypeface(title2);
+                tv.setTextSize(DPS(7));
+                Typeface sub_title = getResources().getFont(R.font.gothammedium);
+                tv.setTypeface(sub_title);
                 tv.setTextColor(Color.parseColor("#323031"));
 
                 /* Add Components */
@@ -663,11 +592,6 @@ public class MainActivity extends AppCompatActivity {
     // Function to download IMG from URL
     static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
-
-
-        /*new DownloadImageTask((ImageView) findViewById(R.id.img_recent1))
-                    .execute(cocktailArrayList.get(0).image);
-            ((TextView)findViewById(R.id.text_recent1)).setText(cocktailArrayList.get(0).name);*/
 
         public DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;

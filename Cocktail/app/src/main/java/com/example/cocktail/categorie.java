@@ -1,5 +1,6 @@
 package com.example.cocktail;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,10 +35,9 @@ public class categorie extends AppCompatActivity {
         setContentView(R.layout.activity_categorie);
 
         //Fonts
-        Typeface title = getResources().getFont(R.font.fredoka);
-        Typeface title2 = getResources().getFont(R.font.latobold);
-        Typeface title3 = getResources().getFont(R.font.latoblack);
-        Typeface text = getResources().getFont(R.font.montserratrregular);
+        final Typeface main_title = getResources().getFont(R.font.gothamblack);
+        final Typeface sub_sub_title = getResources().getFont(R.font.gothammedium);
+        final Typeface text = getResources().getFont(R.font.montserratrregular);
 
 
         // Get Title & Photo
@@ -65,7 +66,7 @@ public class categorie extends AppCompatActivity {
         }
 
         /* CardView */
-        CardView cv = new CardView(this);
+        final CardView cv = new CardView(this);
         cv.setCardElevation(DPS(0));
         cv.setRadius(DPS(0));
         CardView.LayoutParams params1 = new CardView.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,DPS(300)));
@@ -77,7 +78,7 @@ public class categorie extends AppCompatActivity {
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         iv.setLayoutParams(params2);
         if(collectionName.equals("Moods")){
-            iv.setImageDrawable(getResources().getDrawable(R.drawable.moods2));
+            iv.setImageDrawable(getResources().getDrawable(R.drawable.mood));
         }
         /* Black Background */
         TextView tv = new TextView(this);
@@ -89,7 +90,7 @@ public class categorie extends AppCompatActivity {
         tv1.setText(collectionName);
         tv1.setLayoutParams(params2);
         tv1.setTextSize(DPS(15));
-        tv1.setTypeface(title);
+        tv1.setTypeface(main_title);
         tv1.setTextColor(Color.parseColor("#ffffff"));
         tv1.setGravity(Gravity.CENTER);
         /* Add components */
@@ -97,6 +98,88 @@ public class categorie extends AppCompatActivity {
         cv.addView(tv);
         cv.addView(tv1);
         ((LinearLayout)findViewById(R.id.collection_layout)).addView(cv);
+
+
+        final String[] title = {
+                "Happy",
+                "Sick",
+                "In Love",
+                "Sad",
+                "Angry",
+                "Sleepy"
+        };
+
+
+        for(int i= 0; i<6; i++){
+
+            /* CardView */
+            final CardView cv1 = new CardView(this);
+            cv1.setCardElevation(DPS(0));
+            cv1.setRadius(DPS(5));
+            CardView.LayoutParams params3 = new CardView.LayoutParams(new LinearLayout.LayoutParams(DPS(176),DPS(84)));
+            params3.setMargins(DPS(15),DPS(15),DPS(15),DPS(0));
+            //params3.setMargins(0,0,0,0);
+            cv1.setLayoutParams(params3);
+
+            /* ImageView */
+            ImageView iv2 = new ImageView(this);
+            iv2.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            params4.weight=1;
+            iv2.setLayoutParams(params4);
+            if(i==0){
+                iv2.setImageDrawable(getResources().getDrawable(R.drawable.happy));
+            }else if(i==1){
+                iv2.setImageDrawable(getResources().getDrawable(R.drawable.sik));
+            }else if(i==2){
+                iv2.setImageDrawable(getResources().getDrawable(R.drawable.love));
+            } else if(i==3){
+                iv2.setImageDrawable(getResources().getDrawable(R.drawable.sad));
+            } else if(i==4){
+                iv2.setImageDrawable(getResources().getDrawable(R.drawable.angry));
+            }else{
+                iv2.setImageDrawable(getResources().getDrawable(R.drawable.sleep));
+            }
+
+
+            /* Black Background */
+            TextView tv2 = new TextView(this);
+            tv2.setLayoutParams(params4);
+            tv2.setBackgroundColor(Color.parseColor("#80343035"));
+            tv2.setGravity(Gravity.CENTER);
+
+            /* Text View */
+            TextView tv4 = new TextView(this);
+            tv4.setText(title[i]);
+            tv4.setLayoutParams(params4);
+            tv4.setTextSize(DPS(9));
+            tv4.setTypeface(main_title);
+            tv4.setTextColor(Color.parseColor("#ffffff"));
+            tv4.setGravity(Gravity.CENTER);
+
+            /* Add components */
+            cv1.addView(iv2);
+            cv1.addView(tv2);
+            cv1.addView(tv4);
+
+            if(i%2==0){
+                ((LinearLayout) findViewById(R.id.first_column)).addView(cv1);
+            }else{
+                ((LinearLayout) findViewById(R.id.second_column)).addView(cv1);
+            }
+
+            final int finalI = i;
+            cv1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(cv1.getContext(), collection.class);
+                    intent.putExtra("title", title[finalI]);
+                    cv1.getContext().startActivity(intent);
+                }
+            });
+
+        }
+
     }
 
     // DPS to Pixels Function
