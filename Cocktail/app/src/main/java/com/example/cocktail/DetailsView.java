@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -58,17 +59,14 @@ public class DetailsView extends AppCompatActivity {
     private ProgressDialog pDialog;
 
     TextView textView;
-    TextView ingredient;
-    TextView measurement;
     ToggleButton toggleButton;
-//    Spinner spinner;
     Button button;
 
     ArrayList<HashMap<String, String>> ingredientsList;
     String[] ingredients;
     String[] measurements;
-    ArrayList<String> shoppingList = new ArrayList<String>();
-    ArrayList<String> shoppingList2 = new ArrayList<String>();
+    ArrayList<String> shoppingList = new ArrayList<>();
+    ArrayList<String> shoppingList2 = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -93,7 +91,6 @@ public class DetailsView extends AppCompatActivity {
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
         final String url = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id;
 
-//        spinner = findViewById(R.id.servings_spinner);
         toggleButton = findViewById(R.id.myToggleButton);
         ingredientsList = new ArrayList<>();
         final ListView ingredientsListview = findViewById(R.id.Ingredients_list);
@@ -250,62 +247,68 @@ public class DetailsView extends AppCompatActivity {
                                         new DownloadImageTask(imgIngredient8).execute(imageURLArray[7]);
                                     }
 
-
-
                                     measurements = new String[8];
 
                                     if (cocktail_info.measure1.equals("null")) {
                                         measurements[0] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[0].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[0] = cocktail_info.measure1;
                                         shoppingList2.add(cocktail_info.measure1);
                                     }
                                     if (cocktail_info.measure2.equals("null")) {
                                         measurements[1] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[1].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[1] = cocktail_info.measure2;
                                         shoppingList2.add(cocktail_info.measure2);
                                     }
                                     if (cocktail_info.measure3.equals("null")) {
                                         measurements[2] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[2].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[2] = cocktail_info.measure3;
                                         shoppingList2.add(cocktail_info.measure3);
                                     }
                                     if (cocktail_info.measure4.equals("null")) {
                                         measurements[3] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[3].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[3] = cocktail_info.measure4;
                                         shoppingList2.add(cocktail_info.measure4);
                                     }
                                     if (cocktail_info.measure5.equals("null")) {
                                         measurements[4] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[4].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[4] = cocktail_info.measure5;
                                         shoppingList2.add(cocktail_info.measure5);
                                     }
                                     if (cocktail_info.measure6.equals("null")) {
                                         measurements[5] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[5].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[5] = cocktail_info.measure6;
                                         shoppingList2.add(cocktail_info.measure6);
                                     }
                                     if (cocktail_info.measure7.equals("null")) {
                                         measurements[6] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[6].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[6] = cocktail_info.measure7;
                                         shoppingList2.add(cocktail_info.measure7);
                                     }
                                     if (cocktail_info.measure8.equals("null")) {
                                         measurements[7] = "null";
-                                        shoppingList2.add("To your liking");
+                                        if(ingredients[7].equals("null")) {
+                                        } else shoppingList2.add("To your liking");
                                     } else {
                                         measurements[7] = cocktail_info.measure8;
                                         shoppingList2.add(cocktail_info.measure8);
@@ -343,18 +346,12 @@ public class DetailsView extends AppCompatActivity {
                                             TextView t2 = v.findViewById(R.id.measurement);
                                             if ((t.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0){
                                                 t.setPaintFlags(0);
-
-                                                /*for(int j = 0; j<shoppingList.size(); j++){
-                                                    if(shoppingList.get(j).equals(t.getText().toString())){
-                                                        shoppingList.remove(j);
-                                                        shoppingList2.remove(j);
-                                                    }
-                                                }*/
-
+                                                t.setTextColor(Color.parseColor("#212529"));
                                                 shoppingList.add(t.getText().toString());
                                                 shoppingList2.add(t2.getText().toString());
                                             }else{
                                                 t.setPaintFlags(t.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                                                t.setTextColor(Color.parseColor("#b0b0b0"));
                                                 for(int j = 0; j<shoppingList.size(); j++){
                                                     if(shoppingList.get(j).equals(t.getText().toString())){
                                                         shoppingList.remove(j);
@@ -362,9 +359,6 @@ public class DetailsView extends AppCompatActivity {
                                                     }
                                                 }
                                             }
-                                            Log.d("Hello",t.getText().toString());
-
-
                                         }
                                     });
 
@@ -423,42 +417,12 @@ public class DetailsView extends AppCompatActivity {
 
         // add it to the RequestQueue
         requestQueue.add(jsonObjectRequest);
-//
-//        //Number of servings
-//        ArrayList<String> arrayList = new ArrayList<>();
-//        arrayList.add("1");
-//        arrayList.add("2");
-//        arrayList.add("3");
-//        arrayList.add("4");
-//        arrayList.add("5");
-//        arrayList.add("6");
-//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayList);
-//        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner.setAdapter(arrayAdapter);
-//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                String tutorialsName = parent.getItemAtPosition(position).toString();
-//                Toast.makeText(parent.getContext(), "Selected: " + tutorialsName, Toast.LENGTH_LONG).show();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
 
         button = findViewById(R.id.btn_share);
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 final StringBuilder ingredientsBuilder = new StringBuilder();
-                for(int h=0; h<shoppingList.size(); h++){
-                    Log.d("holo",shoppingList.get(h));
-                }
-                for(int f=0; f<shoppingList.size(); f++){
-                    Log.d("holo",shoppingList2.get(f));
-                }
                 for(int i = 0; i < shoppingList.size(); i++){
                     ingredientsBuilder.append(shoppingList2.get(i) + " of " + shoppingList.get(i) + "\n");
                 }
