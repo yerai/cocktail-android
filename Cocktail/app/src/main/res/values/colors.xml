@@ -12,5 +12,7 @@
     <color name="white">#FFFFFF</color>
     <color name="green">#8BC34A</color>
     <color name="ingredient">#212529</color>
+    <color name="pressed_color">#b0b0b0</color>
+    <color name="default_color">#212529</color>
 
 </resources>
