@@ -150,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onResponse(JSONObject response) {
-                                Log.d("hello", "five");
                                 Iterator<?> keys = response.keys();
                                 while(keys.hasNext() ) {
                                     String key = (String)keys.next();
@@ -404,7 +403,8 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         params2.weight=1;
         iv.setLayoutParams(params2);
-        new DownloadImageTask(iv).execute("https://cdn.dribbble.com/users/216803/screenshots/1465689/moods.png");
+        iv.setImageDrawable(getResources().getDrawable(R.drawable.mooods));
+        //new DownloadImageTask(iv).execute("https://cdn.dribbble.com/users/216803/screenshots/1465689/moods.png");
         /* Black Background */
         TextView tv2 = new TextView(this);
         tv2.setLayoutParams(params2);
@@ -424,6 +424,15 @@ public class MainActivity extends AppCompatActivity {
         cv.addView(tv);
         ((LinearLayout)findViewById(R.id.Categories1)).addView(cv);
 
+        cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(cv.getContext(), categorie.class);
+                intent.putExtra("title", "Moods");
+                cv.getContext().startActivity(intent);
+            }
+        });
+
 
         // Alcohol
         /* CardView */
@@ -437,7 +446,8 @@ public class MainActivity extends AppCompatActivity {
         ImageView iv2 = new ImageView(this);
         iv2.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv2.setLayoutParams(params2);
-        new DownloadImageTask(iv2).execute("http://www.todayifoundout.com/wp-content/uploads/2017/05/alcohol-768x513.png");
+        iv2.setImageDrawable(getResources().getDrawable(R.drawable.alcohol));
+        //new DownloadImageTask(iv2).execute("http://www.todayifoundout.com/wp-content/uploads/2017/05/alcohol-768x513.png");
         /* Black Background */
         TextView tv4 = new TextView(this);
         tv4.setLayoutParams(params2);
@@ -468,7 +478,8 @@ public class MainActivity extends AppCompatActivity {
         ImageView iv3 = new ImageView(this);
         iv3.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv3.setLayoutParams(params2);
-        new DownloadImageTask(iv3).execute("https://cdn-prod.medicalnewstoday.com/content/images/articles/308/308796/mixed-fruits.jpg");
+        iv3.setImageDrawable(getResources().getDrawable(R.drawable.fruit));
+        //new DownloadImageTask(iv3).execute("https://cdn-prod.medicalnewstoday.com/content/images/articles/308/308796/mixed-fruits.jpg");
         /* Black Background */
         TextView tv6 = new TextView(this);
         tv6.setLayoutParams(params2);
@@ -498,7 +509,8 @@ public class MainActivity extends AppCompatActivity {
         ImageView iv4 = new ImageView(this);
         iv4.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv4.setLayoutParams(params2);
-        new DownloadImageTask(iv4).execute("https://image.freepik.com/free-vector/tourists-landmarks-poster_1284-11165.jpg");
+        iv4.setImageDrawable(getResources().getDrawable(R.drawable.countries));
+        //new DownloadImageTask(iv4).execute("https://image.freepik.com/free-vector/tourists-landmarks-poster_1284-11165.jpg");
         /* Black Background */
         TextView tv8 = new TextView(this);
         tv8.setLayoutParams(params2);
@@ -518,26 +530,6 @@ public class MainActivity extends AppCompatActivity {
         cv4.addView(tv7);
         ((LinearLayout)findViewById(R.id.Categories2)).addView(cv4);
 
-
-        /* Go to Favorites */
-        /* On click*/
-
-
-        cv3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(cv3.getContext(), Favorites.class);
-                cv3.getContext().startActivity(intent);
-            }
-        });
-
-        cv4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(cv4.getContext(), DetailsView.class);
-                cv4.getContext().startActivity(intent);
-            }
-        });
 
     }
 
