@@ -179,7 +179,7 @@ public class DetailsView extends AppCompatActivity {
 
                                     ingredients = new String[8];
 
-                                    if (cocktail_info.ingredient1.equals("null")) {
+                                    if (cocktail_info.ingredient1.equals("null") || cocktail_info.ingredient1.equals("")) {
                                         imgIngredient1.setVisibility(View.GONE);
                                         ingredients[0] = "null";
                                     } else {
@@ -188,7 +188,7 @@ public class DetailsView extends AppCompatActivity {
                                         shoppingList.add(cocktail_info.ingredient1);
                                         new DownloadImageTask(imgIngredient1).execute(imageURLArray[0]);
                                     }
-                                    if (cocktail_info.ingredient2.equals("null")) {
+                                    if (cocktail_info.ingredient2.equals("null" ) || cocktail_info.ingredient2.equals("")) {
                                         imgIngredient2.setVisibility(View.GONE);
                                         ingredients[1] = "null";
                                     } else {
@@ -196,7 +196,7 @@ public class DetailsView extends AppCompatActivity {
                                         shoppingList.add(cocktail_info.ingredient2);
                                         new DownloadImageTask(imgIngredient2).execute(imageURLArray[1]);
                                     }
-                                    if (cocktail_info.ingredient3.equals("null")) {
+                                    if (cocktail_info.ingredient3.equals("null") || cocktail_info.ingredient3.equals("")) {
                                         Log.d("Hello","1");
                                         imgIngredient3.setVisibility(View.GONE);
                                         ingredients[2] = "null";
@@ -206,7 +206,7 @@ public class DetailsView extends AppCompatActivity {
                                         shoppingList.add(cocktail_info.ingredient3);
                                         new DownloadImageTask(imgIngredient3).execute(imageURLArray[2]);
                                     }
-                                    if (cocktail_info.ingredient4.equals("null")) {
+                                    if (cocktail_info.ingredient4.equals("null") || cocktail_info.ingredient4.equals("")) {
                                         imgIngredient4.setVisibility(View.GONE);
                                         ingredients[3] = "null";
                                     } else {
@@ -214,7 +214,7 @@ public class DetailsView extends AppCompatActivity {
                                         shoppingList.add(cocktail_info.ingredient4);
                                         new DownloadImageTask(imgIngredient4).execute(imageURLArray[3]);
                                     }
-                                    if (cocktail_info.ingredient5.equals("null")) {
+                                    if (cocktail_info.ingredient5.equals("null") || cocktail_info.ingredient5.equals("")) {
                                         imgIngredient5.setVisibility(View.GONE);
                                         ingredients[4] = "null";
                                     } else {
@@ -222,7 +222,7 @@ public class DetailsView extends AppCompatActivity {
                                         shoppingList.add(cocktail_info.ingredient5);
                                         new DownloadImageTask(imgIngredient5).execute(imageURLArray[4]);
                                     }
-                                    if (cocktail_info.ingredient6.equals("null")) {
+                                    if (cocktail_info.ingredient6.equals("null") || cocktail_info.ingredient6.equals("")) {
                                         imgIngredient6.setVisibility(View.GONE);
                                         ingredients[5] = "null";
                                     } else {
@@ -230,7 +230,7 @@ public class DetailsView extends AppCompatActivity {
                                         shoppingList.add(cocktail_info.ingredient6);
                                         new DownloadImageTask(imgIngredient6).execute(imageURLArray[5]);
                                     }
-                                    if (cocktail_info.ingredient7.equals("null")) {
+                                    if (cocktail_info.ingredient7.equals("null") || cocktail_info.ingredient7.equals("")) {
                                         imgIngredient7.setVisibility(View.GONE);
                                         ingredients[6] = "null";
                                     } else {
@@ -238,7 +238,7 @@ public class DetailsView extends AppCompatActivity {
                                         shoppingList.add(cocktail_info.ingredient7);
                                         new DownloadImageTask(imgIngredient7).execute(imageURLArray[6]);
                                     }
-                                    if (cocktail_info.ingredient8.equals("null")) {
+                                    if (cocktail_info.ingredient8.equals("null") || cocktail_info.ingredient8.equals("")) {
                                         ingredients[7] = "null";
                                         imgIngredient8.setVisibility(View.GONE);
                                     } else {
@@ -249,7 +249,7 @@ public class DetailsView extends AppCompatActivity {
 
                                     measurements = new String[8];
 
-                                    if (cocktail_info.measure1.equals("null")) {
+                                    if (cocktail_info.measure1.equals("null") || cocktail_info.measure1.equals("")) {
                                         measurements[0] = "null";
                                         if(ingredients[0].equals("null")) {
                                         } else shoppingList2.add("To your liking");
@@ -257,7 +257,7 @@ public class DetailsView extends AppCompatActivity {
                                         measurements[0] = cocktail_info.measure1;
                                         shoppingList2.add(cocktail_info.measure1);
                                     }
-                                    if (cocktail_info.measure2.equals("null")) {
+                                    if (cocktail_info.measure2.equals("null") || cocktail_info.measure2.equals("")) {
                                         measurements[1] = "null";
                                         if(ingredients[1].equals("null")) {
                                         } else shoppingList2.add("To your liking");
@@ -265,7 +265,7 @@ public class DetailsView extends AppCompatActivity {
                                         measurements[1] = cocktail_info.measure2;
                                         shoppingList2.add(cocktail_info.measure2);
                                     }
-                                    if (cocktail_info.measure3.equals("null")) {
+                                    if (cocktail_info.measure3.equals("null") || cocktail_info.measure3.equals("")) {
                                         measurements[2] = "null";
                                         if(ingredients[2].equals("null")) {
                                         } else shoppingList2.add("To your liking");
@@ -273,7 +273,7 @@ public class DetailsView extends AppCompatActivity {
                                         measurements[2] = cocktail_info.measure3;
                                         shoppingList2.add(cocktail_info.measure3);
                                     }
-                                    if (cocktail_info.measure4.equals("null")) {
+                                    if (cocktail_info.measure4.equals("null") || cocktail_info.measure4.equals("")) {
                                         measurements[3] = "null";
                                         if(ingredients[3].equals("null")) {
                                         } else shoppingList2.add("To your liking");
@@ -281,7 +281,7 @@ public class DetailsView extends AppCompatActivity {
                                         measurements[3] = cocktail_info.measure4;
                                         shoppingList2.add(cocktail_info.measure4);
                                     }
-                                    if (cocktail_info.measure5.equals("null")) {
+                                    if (cocktail_info.measure5.equals("null") || cocktail_info.measure5.equals("")) {
                                         measurements[4] = "null";
                                         if(ingredients[4].equals("null")) {
                                         } else shoppingList2.add("To your liking");
@@ -289,7 +289,7 @@ public class DetailsView extends AppCompatActivity {
                                         measurements[4] = cocktail_info.measure5;
                                         shoppingList2.add(cocktail_info.measure5);
                                     }
-                                    if (cocktail_info.measure6.equals("null")) {
+                                    if (cocktail_info.measure6.equals("null") || cocktail_info.measure6.equals("")) {
                                         measurements[5] = "null";
                                         if(ingredients[5].equals("null")) {
                                         } else shoppingList2.add("To your liking");
@@ -297,7 +297,7 @@ public class DetailsView extends AppCompatActivity {
                                         measurements[5] = cocktail_info.measure6;
                                         shoppingList2.add(cocktail_info.measure6);
                                     }
-                                    if (cocktail_info.measure7.equals("null")) {
+                                    if (cocktail_info.measure7.equals("null") || cocktail_info.measure7.equals("")) {
                                         measurements[6] = "null";
                                         if(ingredients[6].equals("null")) {
                                         } else shoppingList2.add("To your liking");
@@ -305,7 +305,7 @@ public class DetailsView extends AppCompatActivity {
                                         measurements[6] = cocktail_info.measure7;
                                         shoppingList2.add(cocktail_info.measure7);
                                     }
-                                    if (cocktail_info.measure8.equals("null")) {
+                                    if (cocktail_info.measure8.equals("null") || cocktail_info.measure8.equals("")) {
                                         measurements[7] = "null";
                                         if(ingredients[7].equals("null")) {
                                         } else shoppingList2.add("To your liking");
